@@ -30,10 +30,10 @@ export const CalculadoraPage: React.FC = () => {
     <DashboardLayout>
       <div>
         {/* Header */}
-        <h1 className="text-2xl font-bold text-gray-900 mb-6">Calculadora de Tributos</h1>
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">Calculadora de Tributos</h1>
 
         {/* Tabs */}
-        <div className="border-b border-gray-200 mb-6">
+        <div className="border-b border-gray-200 dark:border-gray-700 mb-6">
           <nav className="-mb-px flex space-x-8 overflow-x-auto">
             <button
               onClick={() => {
@@ -44,8 +44,8 @@ export const CalculadoraPage: React.FC = () => {
                 whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm
                 ${
                   tipoCalculo === 'regime-geral'
-                    ? 'border-blue-500 text-blue-600'
-                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                    ? 'border-blue-500 text-blue-600 dark:border-blue-400 dark:text-blue-400'
+                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-300 dark:hover:border-gray-600'
                 }
               `}
             >
@@ -60,8 +60,8 @@ export const CalculadoraPage: React.FC = () => {
                 whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm
                 ${
                   tipoCalculo === 'pedagio'
-                    ? 'border-blue-500 text-blue-600'
-                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                    ? 'border-blue-500 text-blue-600 dark:border-blue-400 dark:text-blue-400'
+                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-300 dark:hover:border-gray-600'
                 }
               `}
             >
@@ -76,8 +76,8 @@ export const CalculadoraPage: React.FC = () => {
                 whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm
                 ${
                   tipoCalculo === 'base-is'
-                    ? 'border-blue-500 text-blue-600'
-                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                    ? 'border-blue-500 text-blue-600 dark:border-blue-400 dark:text-blue-400'
+                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-300 dark:hover:border-gray-600'
                 }
               `}
             >
@@ -92,8 +92,8 @@ export const CalculadoraPage: React.FC = () => {
                 whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm
                 ${
                   tipoCalculo === 'base-cbs-ibs'
-                    ? 'border-blue-500 text-blue-600'
-                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                    ? 'border-blue-500 text-blue-600 dark:border-blue-400 dark:text-blue-400'
+                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-300 dark:hover:border-gray-600'
                 }
               `}
             >
@@ -119,7 +119,7 @@ export const CalculadoraPage: React.FC = () => {
             <div className="mt-6 flex justify-center">
               <button
                 onClick={handleNovoCalculo}
-                className="px-6 py-3 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors"
+                className="px-6 py-3 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 transition-colors"
               >
                 Realizar Novo Cálculo
               </button>

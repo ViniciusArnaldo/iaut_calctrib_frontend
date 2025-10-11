@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { AuthProvider } from './features/auth/context/AuthContext';
+import { ThemeProvider } from './contexts/ThemeContext';
 import { ProtectedRoute } from './components/common/ProtectedRoute';
 import { ToastContainer } from './components/common/ToastContainer';
 import { useToast } from './hooks/useToast';
@@ -30,13 +31,14 @@ function App() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <BrowserRouter>
-        <AuthProvider>
-          <ToastContainer toasts={toasts} onRemove={removeToast} />
-          <Routes>
-            {/* Public Routes */}
-            <Route path={ROUTES.LOGIN} element={<LoginPage />} />
-            <Route path={ROUTES.REGISTER} element={<RegisterPage />} />
+      <ThemeProvider>
+        <BrowserRouter>
+          <AuthProvider>
+            <ToastContainer toasts={toasts} onRemove={removeToast} />
+            <Routes>
+              {/* Public Routes */}
+              <Route path={ROUTES.LOGIN} element={<LoginPage />} />
+              <Route path={ROUTES.REGISTER} element={<RegisterPage />} />
 
             {/* Protected Routes */}
             <Route
@@ -101,6 +103,7 @@ function App() {
           </Routes>
         </AuthProvider>
       </BrowserRouter>
+      </ThemeProvider>
     </QueryClientProvider>
   );
 }

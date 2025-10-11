@@ -107,7 +107,7 @@ export const UsersPage: React.FC = () => {
     <DashboardLayout>
       <div>
         <div className="flex justify-between items-center mb-6">
-          <h1 className="text-2xl font-bold text-gray-900 mb-6">Gestão de Usuários</h1>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">Gestão de Usuários</h1>
           <Button variant="primary" onClick={() => setShowModal(true)}>
             + Novo Usuário
           </Button>
@@ -117,48 +117,48 @@ export const UsersPage: React.FC = () => {
           {isLoading ? (
             <div className="text-center py-12">
               <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-blue-600 border-r-transparent"></div>
-              <p className="mt-4 text-gray-600">Carregando usuários...</p>
+              <p className="mt-4 text-gray-600 dark:text-gray-400">Carregando usuários...</p>
             </div>
           ) : data?.users && data.users.length > 0 ? (
             <div className="overflow-x-auto">
-              <table className="min-w-full divide-y divide-gray-200">
-                <thead className="bg-gray-50">
+              <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                <thead className="bg-gray-50 dark:bg-gray-800">
                   <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                       Nome
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                       Email
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                       Função
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                       Status
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                       Criado em
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                       Ações
                     </th>
                   </tr>
                 </thead>
-                <tbody className="bg-white divide-y divide-gray-200">
+                <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
                   {data.users.map((user: User) => (
-                    <tr key={user.id} className="hover:bg-gray-50">
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                    <tr key={user.id} className="hover:bg-gray-50 dark:hover:bg-gray-700">
+                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">
                         {user.name}
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600 dark:text-gray-400">
                         {user.email}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <span
                           className={`px-2 py-1 text-xs font-semibold rounded-full ${
                             user.role === 'ADMIN'
-                              ? 'bg-purple-100 text-purple-800'
-                              : 'bg-blue-100 text-blue-800'
+                              ? 'bg-purple-100 dark:bg-purple-900/30 text-purple-800 dark:text-purple-300'
+                              : 'bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300'
                           }`}
                         >
                           {user.role}
@@ -168,20 +168,20 @@ export const UsersPage: React.FC = () => {
                         <span
                           className={`px-2 py-1 text-xs font-semibold rounded-full ${
                             user.isActive
-                              ? 'bg-green-100 text-green-800'
-                              : 'bg-red-100 text-red-800'
+                              ? 'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300'
+                              : 'bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-300'
                           }`}
                         >
                           {user.isActive ? 'Ativo' : 'Inativo'}
                         </span>
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600 dark:text-gray-400">
                         {formatDate(user.createdAt)}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm space-x-2">
                         <button
                           onClick={() => handleToggleClick(user)}
-                          className="inline-flex items-center text-blue-600 hover:text-blue-900 font-medium"
+                          className="inline-flex items-center text-blue-600 dark:text-blue-400 hover:text-blue-900 dark:hover:text-blue-300 font-medium"
                           title={user.isActive ? 'Desativar' : 'Ativar'}
                         >
                           <Ban className="w-4 h-4 mr-1" />
@@ -189,7 +189,7 @@ export const UsersPage: React.FC = () => {
                         </button>
                         <button
                           onClick={() => handleDeleteClick(user)}
-                          className="inline-flex items-center text-red-600 hover:text-red-900 font-medium"
+                          className="inline-flex items-center text-red-600 dark:text-red-400 hover:text-red-900 dark:hover:text-red-300 font-medium"
                           title="Deletar"
                         >
                           <Trash2 className="w-4 h-4 mr-1" />
@@ -216,8 +216,8 @@ export const UsersPage: React.FC = () => {
                   d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"
                 />
               </svg>
-              <h3 className="mt-2 text-sm font-medium text-gray-900">Nenhum usuário encontrado</h3>
-              <p className="mt-1 text-sm text-gray-500">
+              <h3 className="mt-2 text-sm font-medium text-gray-900 dark:text-white">Nenhum usuário encontrado</h3>
+              <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
                 Comece criando um novo usuário.
               </p>
             </div>
@@ -228,7 +228,7 @@ export const UsersPage: React.FC = () => {
         {showModal && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
             <Card className="max-w-md w-full mx-4">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">Novo Usuário</h3>
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Novo Usuário</h3>
               <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
                 <Input
                   label="Nome"
@@ -259,8 +259,8 @@ export const UsersPage: React.FC = () => {
                 />
 
                 {createMutation.isError && (
-                  <div className="p-3 bg-red-50 border border-red-200 rounded-lg">
-                    <p className="text-sm text-red-600">
+                  <div className="p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
+                    <p className="text-sm text-red-600 dark:text-red-400">
                       Erro ao criar usuário. Verifique os dados e tente novamente.
                     </p>
                   </div>
@@ -297,22 +297,22 @@ export const UsersPage: React.FC = () => {
         {showToggleConfirm && selectedUser && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
             <Card className="max-w-md w-full mx-4">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
                 {selectedUser.isActive ? 'Desativar Usuário' : 'Ativar Usuário'}
               </h3>
-              <p className="text-gray-600 mb-6">
+              <p className="text-gray-600 dark:text-gray-400 mb-6">
                 Tem certeza que deseja {selectedUser.isActive ? 'desativar' : 'ativar'} o usuário{' '}
                 <strong>{selectedUser.name}</strong>?
                 {selectedUser.isActive && (
-                  <span className="block mt-2 text-sm text-orange-600">
+                  <span className="block mt-2 text-sm text-orange-600 dark:text-orange-400">
                     O usuário não poderá acessar o sistema enquanto estiver desativado.
                   </span>
                 )}
               </p>
 
               {(activateMutation.isError || deactivateMutation.isError) && (
-                <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg">
-                  <p className="text-sm text-red-600">
+                <div className="mb-4 p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
+                  <p className="text-sm text-red-600 dark:text-red-400">
                     Erro ao alterar status do usuário. Tente novamente.
                   </p>
                 </div>
@@ -322,7 +322,7 @@ export const UsersPage: React.FC = () => {
                 <button
                   onClick={handleConfirmToggle}
                   disabled={activateMutation.isPending || deactivateMutation.isPending}
-                  className="flex-1 px-4 py-2 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 disabled:opacity-50"
+                  className="flex-1 px-4 py-2 bg-blue-600 dark:bg-blue-500 text-white font-medium rounded-lg hover:bg-blue-700 dark:hover:bg-blue-600 disabled:opacity-50"
                 >
                   {(activateMutation.isPending || deactivateMutation.isPending) ? 'Processando...' : 'Confirmar'}
                 </button>
@@ -332,7 +332,7 @@ export const UsersPage: React.FC = () => {
                     setSelectedUser(null);
                   }}
                   disabled={activateMutation.isPending || deactivateMutation.isPending}
-                  className="flex-1 px-4 py-2 bg-gray-200 text-gray-700 font-medium rounded-lg hover:bg-gray-300 disabled:opacity-50"
+                  className="flex-1 px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 font-medium rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 disabled:opacity-50"
                 >
                   Cancelar
                 </button>
@@ -345,18 +345,18 @@ export const UsersPage: React.FC = () => {
         {showDeleteConfirm && selectedUser && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
             <Card className="max-w-md w-full mx-4">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">Deletar Usuário</h3>
-              <p className="text-gray-600 mb-6">
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Deletar Usuário</h3>
+              <p className="text-gray-600 dark:text-gray-400 mb-6">
                 Tem certeza que deseja deletar permanentemente o usuário{' '}
                 <strong>{selectedUser.name}</strong>?
-                <span className="block mt-2 text-sm text-red-600 font-medium">
+                <span className="block mt-2 text-sm text-red-600 dark:text-red-400 font-medium">
                   Esta ação não pode ser desfeita!
                 </span>
               </p>
 
               {deleteMutation.isError && (
-                <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg">
-                  <p className="text-sm text-red-600">
+                <div className="mb-4 p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
+                  <p className="text-sm text-red-600 dark:text-red-400">
                     Erro ao deletar usuário. Tente novamente.
                   </p>
                 </div>
@@ -366,7 +366,7 @@ export const UsersPage: React.FC = () => {
                 <button
                   onClick={handleConfirmDelete}
                   disabled={deleteMutation.isPending}
-                  className="flex-1 px-4 py-2 bg-red-600 text-white font-medium rounded-lg hover:bg-red-700 disabled:opacity-50"
+                  className="flex-1 px-4 py-2 bg-red-600 dark:bg-red-500 text-white font-medium rounded-lg hover:bg-red-700 dark:hover:bg-red-600 disabled:opacity-50"
                 >
                   {deleteMutation.isPending ? 'Deletando...' : 'Deletar'}
                 </button>
@@ -376,7 +376,7 @@ export const UsersPage: React.FC = () => {
                     setSelectedUser(null);
                   }}
                   disabled={deleteMutation.isPending}
-                  className="flex-1 px-4 py-2 bg-gray-200 text-gray-700 font-medium rounded-lg hover:bg-gray-300 disabled:opacity-50"
+                  className="flex-1 px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 font-medium rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 disabled:opacity-50"
                 >
                   Cancelar
                 </button>

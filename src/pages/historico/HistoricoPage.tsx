@@ -48,11 +48,11 @@ export const HistoricoPage: React.FC = () => {
   return (
     <DashboardLayout>
       <div>
-        <h1 className="text-2xl font-bold text-gray-900 mb-6">Histórico de Cálculos</h1>
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">Histórico de Cálculos</h1>
 
         {/* Filtros */}
         <Card className="mb-6">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">Filtros</h3>
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Filtros</h3>
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             <Input
               label="Data Início"
@@ -92,57 +92,57 @@ export const HistoricoPage: React.FC = () => {
         <Card>
           {isLoading ? (
             <div className="text-center py-12">
-              <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-blue-600 border-r-transparent"></div>
-              <p className="mt-4 text-gray-600">Carregando histórico...</p>
+              <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-blue-600 dark:border-blue-400 border-r-transparent"></div>
+              <p className="mt-4 text-gray-600 dark:text-gray-400">Carregando histórico...</p>
             </div>
           ) : data?.itens && data.itens.length > 0 ? (
             <>
               <div className="overflow-x-auto">
-                <table className="min-w-full divide-y divide-gray-200">
-                  <thead className="bg-gray-50">
+                <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                  <thead className="bg-gray-50 dark:bg-gray-800">
                     <tr>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                         Data
                       </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                         Tipo
                       </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                         UF/Município
                       </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                         Itens
                       </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                         Total Tributos
                       </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                         Ações
                       </th>
                     </tr>
                   </thead>
-                  <tbody className="bg-white divide-y divide-gray-200">
+                  <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
                     {data.itens.map((calculo: any) => (
-                      <tr key={calculo.id} className="hover:bg-gray-50">
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                      <tr key={calculo.id} className="hover:bg-gray-50 dark:hover:bg-gray-700/50">
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-300">
                           {formatDate(calculo.dataOperacao)}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
-                          <span className="px-2 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800">
+                          <span className="px-2 py-1 text-xs font-semibold rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300">
                             {calculo.tipo}
                           </span>
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600 dark:text-gray-400">
                           {calculo.uf} / {calculo.municipio?.nomeMunicipio || '-'}
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600 dark:text-gray-400">
                           {calculo.itens?.length || 0} item(ns)
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm font-semibold text-gray-900">
+                        <td className="px-6 py-4 whitespace-nowrap text-sm font-semibold text-gray-900 dark:text-gray-300">
                           {formatCurrency(calculo.totalTributos || 0)}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm">
-                          <button className="text-blue-600 hover:text-blue-900 font-medium">
+                          <button className="text-blue-600 dark:text-blue-400 hover:text-blue-900 dark:hover:text-blue-300 font-medium">
                             Ver Detalhes
                           </button>
                         </td>
@@ -153,7 +153,7 @@ export const HistoricoPage: React.FC = () => {
               </div>
 
               {/* Paginação */}
-              <div className="mt-6 flex items-center justify-between border-t border-gray-200 pt-4">
+              <div className="mt-6 flex items-center justify-between border-t border-gray-200 dark:border-gray-700 pt-4">
                 <div className="flex-1 flex justify-between sm:hidden">
                   <Button
                     variant="secondary"
@@ -172,7 +172,7 @@ export const HistoricoPage: React.FC = () => {
                 </div>
                 <div className="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
                   <div>
-                    <p className="text-sm text-gray-700">
+                    <p className="text-sm text-gray-700 dark:text-gray-300">
                       Mostrando{' '}
                       <span className="font-medium">{(page - 1) * limit + 1}</span> até{' '}
                       <span className="font-medium">
@@ -190,7 +190,7 @@ export const HistoricoPage: React.FC = () => {
                     >
                       Anterior
                     </Button>
-                    <span className="px-4 py-2 text-sm text-gray-700">
+                    <span className="px-4 py-2 text-sm text-gray-700 dark:text-gray-300">
                       Página {page} de {data?.meta.totalPages || 1}
                     </span>
                     <Button
@@ -208,7 +208,7 @@ export const HistoricoPage: React.FC = () => {
           ) : (
             <div className="text-center py-12">
               <svg
-                className="mx-auto h-12 w-12 text-gray-400"
+                className="mx-auto h-12 w-12 text-gray-400 dark:text-gray-600"
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
@@ -220,8 +220,8 @@ export const HistoricoPage: React.FC = () => {
                   d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
                 />
               </svg>
-              <h3 className="mt-2 text-sm font-medium text-gray-900">Nenhum cálculo encontrado</h3>
-              <p className="mt-1 text-sm text-gray-500">
+              <h3 className="mt-2 text-sm font-medium text-gray-900 dark:text-white">Nenhum cálculo encontrado</h3>
+              <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
                 Comece realizando um cálculo na calculadora.
               </p>
             </div>

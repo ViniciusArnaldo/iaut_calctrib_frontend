@@ -39,15 +39,15 @@ export const RegisterPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 flex items-center justify-center px-4 py-12">
+    <div className="min-h-screen bg-gray-100 dark:bg-gray-900 flex items-center justify-center px-4 py-12">
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">Calculadora Tributária</h1>
-          <p className="mt-2 text-gray-600">Crie sua conta gratuitamente</p>
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Calculadora Tributária</h1>
+          <p className="mt-2 text-gray-600 dark:text-gray-400">Crie sua conta gratuitamente</p>
         </div>
 
         <Card>
-          <h2 className="text-2xl font-semibold text-gray-900 mb-6">Cadastro</h2>
+          <h2 className="text-2xl font-semibold text-gray-900 dark:text-white mb-6">Cadastro</h2>
 
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
             <Input
@@ -85,8 +85,8 @@ export const RegisterPage: React.FC = () => {
             />
 
             {registerMutation.isError && (
-              <div className="p-3 bg-red-50 border border-red-200 rounded-lg">
-                <p className="text-sm text-red-600">
+              <div className="p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
+                <p className="text-sm text-red-600 dark:text-red-400">
                   Erro ao criar conta. Email ou empresa já cadastrados.
                 </p>
               </div>
@@ -103,11 +103,11 @@ export const RegisterPage: React.FC = () => {
           </form>
 
           <div className="mt-6 text-center">
-            <p className="text-sm text-gray-600">
+            <p className="text-sm text-gray-600 dark:text-gray-400">
               Já tem uma conta?{' '}
               <Link
                 to={ROUTES.LOGIN}
-                className="font-medium text-primary-600 hover:text-primary-500"
+                className="font-medium text-primary-600 dark:text-primary-400 hover:text-primary-500 dark:hover:text-primary-300"
               >
                 Faça login
               </Link>
@@ -115,7 +115,7 @@ export const RegisterPage: React.FC = () => {
           </div>
         </Card>
 
-        <div className="mt-6 text-center text-xs text-gray-500">
+        <div className="mt-6 text-center text-xs text-gray-500 dark:text-gray-400">
           <p>Plano BASIC: 50 cálculos/mês - R$ 99,90</p>
           <p className="mt-1">Primeiro mês grátis!</p>
         </div>

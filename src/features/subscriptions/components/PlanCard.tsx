@@ -30,12 +30,12 @@ export const PlanCard: React.FC<Props> = ({ plan, currentPlan, onSelect, isLoadi
 
   return (
     <div
-      className={`relative rounded-lg border-2 p-4 ${
+      className={`relative rounded-lg border-2 p-4 bg-white dark:bg-gray-800 ${
         plan.popular
-          ? 'border-blue-500 shadow-lg scale-105'
+          ? 'border-blue-500 dark:border-blue-400 shadow-lg scale-105'
           : isCurrent
-          ? 'border-green-500'
-          : 'border-gray-200'
+          ? 'border-green-500 dark:border-green-400'
+          : 'border-gray-200 dark:border-gray-700'
       }`}
     >
       {plan.popular && (
@@ -55,12 +55,12 @@ export const PlanCard: React.FC<Props> = ({ plan, currentPlan, onSelect, isLoadi
       )}
 
       <div className="text-center mb-4">
-        <h3 className="text-xl font-bold text-gray-900">{plan.nome}</h3>
+        <h3 className="text-xl font-bold text-gray-900 dark:text-white">{plan.nome}</h3>
         <div className="mt-3">
-          <span className="text-3xl font-bold text-gray-900">{formatCurrency(plan.preco)}</span>
-          <span className="text-sm text-gray-600">/mês</span>
+          <span className="text-3xl font-bold text-gray-900 dark:text-white">{formatCurrency(plan.preco)}</span>
+          <span className="text-sm text-gray-600 dark:text-gray-400">/mês</span>
         </div>
-        <p className="mt-1.5 text-xs text-gray-600">
+        <p className="mt-1.5 text-xs text-gray-600 dark:text-gray-400">
           {plan.limiteCalculos === -1
             ? 'Cálculos ilimitados'
             : `${plan.limiteCalculos} cálculos/mês`}
@@ -82,7 +82,7 @@ export const PlanCard: React.FC<Props> = ({ plan, currentPlan, onSelect, isLoadi
                   clipRule="evenodd"
                 />
               </svg>
-              <span className="text-xs text-gray-700">{feature}</span>
+              <span className="text-xs text-gray-700 dark:text-gray-300">{feature}</span>
             </li>
           ))}
         </ul>

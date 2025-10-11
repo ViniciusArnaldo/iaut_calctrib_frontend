@@ -32,15 +32,15 @@ export const LoginPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 flex items-center justify-center px-4">
+    <div className="min-h-screen bg-gray-100 dark:bg-gray-900 flex items-center justify-center px-4">
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">Calculadora Tributária</h1>
-          <p className="mt-2 text-gray-600">CBS, IBS e IS - Reforma Tributária</p>
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Calculadora Tributária</h1>
+          <p className="mt-2 text-gray-600 dark:text-gray-400">CBS, IBS e IS - Reforma Tributária</p>
         </div>
 
         <Card>
-          <h2 className="text-2xl font-semibold text-gray-900 mb-6">Login</h2>
+          <h2 className="text-2xl font-semibold text-gray-900 dark:text-white mb-6">Login</h2>
 
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
             <Input
@@ -60,8 +60,8 @@ export const LoginPage: React.FC = () => {
             />
 
             {loginMutation.isError && (
-              <div className="p-3 bg-red-50 border border-red-200 rounded-lg">
-                <p className="text-sm text-red-600">
+              <div className="p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
+                <p className="text-sm text-red-600 dark:text-red-400">
                   Email ou senha incorretos. Tente novamente.
                 </p>
               </div>
@@ -78,11 +78,11 @@ export const LoginPage: React.FC = () => {
           </form>
 
           <div className="mt-6 text-center">
-            <p className="text-sm text-gray-600">
+            <p className="text-sm text-gray-600 dark:text-gray-400">
               Não tem uma conta?{' '}
               <Link
                 to={ROUTES.REGISTER}
-                className="font-medium text-primary-600 hover:text-primary-500"
+                className="font-medium text-primary-600 dark:text-primary-400 hover:text-primary-500 dark:hover:text-primary-300"
               >
                 Cadastre-se
               </Link>

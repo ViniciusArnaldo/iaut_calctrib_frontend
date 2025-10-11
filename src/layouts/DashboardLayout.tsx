@@ -13,7 +13,7 @@ export const DashboardLayout: React.FC<Props> = ({ children }) => {
   const toggleSidebar = () => setSidebarOpen(!sidebarOpen);
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       <div className="flex h-screen overflow-hidden">
         {/* Sidebar */}
         <Sidebar isOpen={sidebarOpen} onClose={closeSidebar} />
@@ -24,7 +24,7 @@ export const DashboardLayout: React.FC<Props> = ({ children }) => {
           <Header onMenuClick={toggleSidebar} />
 
           {/* Page content */}
-          <main className="flex-1 overflow-y-auto bg-gray-50">
+          <main className="flex-1 overflow-y-auto bg-gray-50 dark:bg-gray-900">
             <div className="p-8">
               {children}
             </div>

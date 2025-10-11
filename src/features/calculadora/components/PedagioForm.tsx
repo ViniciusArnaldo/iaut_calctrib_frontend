@@ -115,7 +115,7 @@ export const PedagioForm: React.FC<Props> = ({ onSuccess }) => {
 
   return (
     <Card>
-      <h2 className="text-xl font-semibold text-gray-900 mb-6">Cálculo de Pedágio</h2>
+      <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-6">Cálculo de Pedágio</h2>
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
         {/* Data */}
@@ -130,7 +130,7 @@ export const PedagioForm: React.FC<Props> = ({ onSuccess }) => {
 
         {/* Município de Origem */}
         <div>
-          <h3 className="text-lg font-medium text-gray-900 mb-4">Origem</h3>
+          <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-4">Origem</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <Select
               label="UF de Origem"
@@ -164,7 +164,7 @@ export const PedagioForm: React.FC<Props> = ({ onSuccess }) => {
 
         {/* Dados Tributários */}
         <div>
-          <h3 className="text-lg font-medium text-gray-900 mb-4">Dados Tributários</h3>
+          <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-4">Dados Tributários</h3>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <Input
               label="CST (Código Situação Tributária)"
@@ -197,12 +197,12 @@ export const PedagioForm: React.FC<Props> = ({ onSuccess }) => {
           </div>
         </div>
 
-        <hr className="my-6" />
+        <hr className="my-6 border-gray-200 dark:border-gray-700" />
 
         {/* Trechos */}
         <div>
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-medium text-gray-900">Trechos</h3>
+            <h3 className="text-lg font-medium text-gray-900 dark:text-white">Trechos</h3>
             <Button type="button" variant="secondary" size="sm" onClick={adicionarTrecho}>
               + Adicionar Trecho
             </Button>
@@ -263,9 +263,9 @@ const TrechoFields: React.FC<TrechoFieldsProps> = ({
   const { data: municipios, isLoading: loadingMunicipios } = useMunicipios(selectedUf);
 
   return (
-    <div className="p-4 border border-gray-200 rounded-lg bg-gray-50">
+    <div className="p-4 border border-gray-200 dark:border-gray-700 rounded-lg bg-gray-50 dark:bg-gray-800">
       <div className="flex items-center justify-between mb-3">
-        <h4 className="text-md font-medium text-gray-700">Trecho {index + 1}</h4>
+        <h4 className="text-md font-medium text-gray-700 dark:text-gray-300">Trecho {index + 1}</h4>
         {canRemove && (
           <Button type="button" variant="danger" size="sm" onClick={onRemove}>
             Remover

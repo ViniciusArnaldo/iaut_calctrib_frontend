@@ -45,7 +45,7 @@ export const ValidarXmlForm: React.FC = () => {
 
   return (
     <Card>
-      <h2 className="text-xl font-semibold text-gray-900 mb-6">Validar XML do ROC</h2>
+      <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-6">Validar XML do ROC</h2>
 
       <div className="space-y-4">
         {/* Tipo e Subtipo */}
@@ -74,34 +74,36 @@ export const ValidarXmlForm: React.FC = () => {
 
         {/* Upload de Arquivo */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
             Carregar Arquivo XML
           </label>
           <input
             type="file"
             accept=".xml"
             onChange={handleFileUpload}
-            className="block w-full text-sm text-gray-500
+            className="block w-full text-sm text-gray-500 dark:text-gray-400
               file:mr-4 file:py-2 file:px-4
               file:rounded-lg file:border-0
               file:text-sm file:font-semibold
-              file:bg-blue-50 file:text-blue-700
-              hover:file:bg-blue-100
+              file:bg-blue-50 dark:file:bg-blue-900/30 file:text-blue-700 dark:file:text-blue-300
+              hover:file:bg-blue-100 dark:hover:file:bg-blue-900/50
               cursor-pointer"
           />
         </div>
 
         {/* Textarea para XML */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
             Conteúdo XML
           </label>
           <textarea
             value={xmlContent}
             onChange={(e) => setXmlContent(e.target.value)}
             placeholder="Cole aqui o conteúdo XML ou use o botão acima para carregar um arquivo..."
-            className="w-full h-64 px-3 py-2 border border-gray-300 rounded-lg
-              focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent
+            className="w-full h-64 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg
+              bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100
+              placeholder:text-gray-400 dark:placeholder:text-gray-500
+              focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-transparent
               font-mono text-sm"
           />
         </div>
@@ -123,19 +125,19 @@ export const ValidarXmlForm: React.FC = () => {
           <div
             className={`p-4 rounded-lg ${
               resultado
-                ? 'bg-green-50 border border-green-200'
-                : 'bg-red-50 border border-red-200'
+                ? 'bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800'
+                : 'bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800'
             }`}
           >
             <div className="flex items-center">
-              <div className={`text-2xl mr-3 ${resultado ? 'text-green-600' : 'text-red-600'}`}>
+              <div className={`text-2xl mr-3 ${resultado ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
                 {resultado ? '✓' : '✗'}
               </div>
               <div>
-                <p className={`font-semibold ${resultado ? 'text-green-800' : 'text-red-800'}`}>
+                <p className={`font-semibold ${resultado ? 'text-green-800 dark:text-green-300' : 'text-red-800 dark:text-red-300'}`}>
                   {resultado ? 'XML Válido' : 'XML Inválido'}
                 </p>
-                <p className={`text-sm ${resultado ? 'text-green-700' : 'text-red-700'}`}>
+                <p className={`text-sm ${resultado ? 'text-green-700 dark:text-green-400' : 'text-red-700 dark:text-red-400'}`}>
                   {resultado
                     ? 'O XML está em conformidade com o schema do ROC.'
                     : 'O XML possui erros de validação. Verifique o conteúdo e tente novamente.'}
@@ -146,8 +148,8 @@ export const ValidarXmlForm: React.FC = () => {
         )}
 
         {validarXmlMutation.isError && (
-          <div className="p-4 bg-red-50 border border-red-200 rounded-lg">
-            <p className="text-sm text-red-800">
+          <div className="p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
+            <p className="text-sm text-red-800 dark:text-red-300">
               Erro ao validar XML. Verifique se o conteúdo está correto e tente novamente.
             </p>
           </div>

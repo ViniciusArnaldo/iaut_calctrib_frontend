@@ -134,12 +134,12 @@ export const RegimeGeralForm: React.FC<Props> = ({ onSuccess }) => {
 
   return (
     <Card>
-      <h2 className="text-xl font-semibold text-gray-900 mb-6">Cálculo de Tributos - Regime Geral</h2>
+      <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-6">Cálculo de Tributos - Regime Geral</h2>
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
         {/* Localização */}
         <div>
-          <h3 className="text-lg font-medium text-gray-900 mb-4">Localização</h3>
+          <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-4">Localização</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <Select
               label="UF"
@@ -181,29 +181,29 @@ export const RegimeGeralForm: React.FC<Props> = ({ onSuccess }) => {
           />
         </div>
 
-        <hr className="my-6" />
+        <hr className="my-6 border-gray-200 dark:border-gray-700" />
 
         {/* Itens */}
         <div>
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-medium text-gray-900">Itens</h3>
+            <h3 className="text-lg font-medium text-gray-900 dark:text-white">Itens</h3>
             <Button type="button" variant="secondary" size="sm" onClick={adicionarItem}>
               + Adicionar Item
             </Button>
           </div>
 
           {errors.itens?.root && (
-            <p className="text-sm text-red-600 mb-4">{errors.itens.root.message}</p>
+            <p className="text-sm text-red-600 dark:text-red-400 mb-4">{errors.itens.root.message}</p>
           )}
 
           <div className="space-y-6">
             {fields.map((field, index) => (
               <div
                 key={field.id}
-                className="p-4 border border-gray-200 rounded-lg bg-gray-50 space-y-4"
+                className="p-4 border border-gray-200 dark:border-gray-700 rounded-lg bg-gray-50 dark:bg-gray-800 space-y-4"
               >
                 <div className="flex items-center justify-between mb-2">
-                  <h4 className="text-md font-medium text-gray-700">Item {index + 1}</h4>
+                  <h4 className="text-md font-medium text-gray-700 dark:text-gray-300">Item {index + 1}</h4>
                   {fields.length > 1 && (
                     <Button
                       type="button"
@@ -294,8 +294,8 @@ export const RegimeGeralForm: React.FC<Props> = ({ onSuccess }) => {
 
         {/* Mensagem de erro */}
         {calcularMutation.isError && (
-          <div className="p-3 bg-red-50 border border-red-200 rounded-lg">
-            <p className="text-sm text-red-600">
+          <div className="p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
+            <p className="text-sm text-red-600 dark:text-red-400">
               Erro ao realizar cálculo. Verifique os dados e tente novamente.
             </p>
           </div>

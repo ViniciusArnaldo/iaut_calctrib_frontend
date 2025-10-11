@@ -63,18 +63,18 @@ export const BaseCalculoISForm: React.FC<Props> = ({ onSuccess }) => {
 
   return (
     <Card>
-      <h2 className="text-xl font-semibold text-gray-900 mb-6">
+      <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-6">
         Base de Cálculo - Imposto Seletivo (Mercadorias)
       </h2>
 
-      <p className="text-sm text-gray-600 mb-6">
+      <p className="text-sm text-gray-600 dark:text-gray-400 mb-6">
         Preencha os valores para calcular a base de cálculo do Imposto Seletivo. Todos os campos são opcionais.
       </p>
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
         {/* Valores Base */}
         <div>
-          <h3 className="text-lg font-medium text-gray-900 mb-4">Valores da Operação</h3>
+          <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-4">Valores da Operação</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <Input
               label="Valor Integral Cobrado"
@@ -98,7 +98,7 @@ export const BaseCalculoISForm: React.FC<Props> = ({ onSuccess }) => {
 
         {/* Acréscimos */}
         <div>
-          <h3 className="text-lg font-medium text-gray-900 mb-4">Acréscimos</h3>
+          <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-4">Acréscimos</h3>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <Input
               label="Juros"
@@ -158,7 +158,7 @@ export const BaseCalculoISForm: React.FC<Props> = ({ onSuccess }) => {
 
         {/* Deduções */}
         <div>
-          <h3 className="text-lg font-medium text-gray-900 mb-4">Deduções</h3>
+          <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-4">Deduções</h3>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <Input
               label="Descontos Condicionais"
@@ -191,7 +191,7 @@ export const BaseCalculoISForm: React.FC<Props> = ({ onSuccess }) => {
 
         {/* Tributos */}
         <div>
-          <h3 className="text-lg font-medium text-gray-900 mb-4">Tributos</h3>
+          <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-4">Tributos</h3>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <Input
               label="Outros Tributos"

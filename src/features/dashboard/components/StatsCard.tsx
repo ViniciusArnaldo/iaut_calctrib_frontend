@@ -10,10 +10,10 @@ interface Props {
 }
 
 const colorClasses = {
-  blue: 'bg-blue-100 text-blue-600',
-  green: 'bg-green-100 text-green-600',
-  purple: 'bg-purple-100 text-purple-600',
-  orange: 'bg-orange-100 text-orange-600',
+  blue: 'bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400',
+  green: 'bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400',
+  purple: 'bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400',
+  orange: 'bg-orange-100 dark:bg-orange-900/30 text-orange-600 dark:text-orange-400',
 };
 
 export const StatsCard: React.FC<Props> = ({ title, value, icon, description, color = 'blue' }) => {
@@ -24,9 +24,9 @@ export const StatsCard: React.FC<Props> = ({ title, value, icon, description, co
           {icon}
         </div>
         <div className="ml-4 flex-1">
-          <p className="text-sm font-medium text-gray-600">{title}</p>
-          <p className="text-2xl font-bold text-gray-900">{value}</p>
-          {description && <p className="text-xs text-gray-500 mt-1">{description}</p>}
+          <p className="text-sm font-medium text-gray-600 dark:text-gray-400">{title}</p>
+          <p className="text-2xl font-bold text-gray-900 dark:text-white">{value}</p>
+          {description && <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">{description}</p>}
         </div>
       </div>
     </Card>

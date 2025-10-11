@@ -10,7 +10,7 @@ export const Header: React.FC<HeaderProps> = ({ onMenuClick }) => {
   const { user, logout } = useAuth();
 
   return (
-    <header className="lg:hidden bg-white border-b border-gray-200 px-4 py-3">
+    <header className="lg:hidden bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-4 py-3">
       <div className="flex items-center justify-between">
         {/* Left side - Menu & Logo */}
         <div className="flex items-center space-x-3">
