@@ -140,6 +140,71 @@ export const calculadoraApi = {
     return response.data;
   },
 
+  /**
+   * Consultar classificações tributárias por CST (com cache)
+   */
+  async consultarClassificacoesPorCST(cst: string, data: string): Promise<any[]> {
+    const response = await apiClient.get(`/calculadora/dados-abertos/classificacoes-tributarias/cst/${cst}`, {
+      params: { data },
+    });
+    return response.data;
+  },
+
+  /**
+   * Buscar lista de NCMs do banco (apenas analíticos com 8 dígitos)
+   * Busca TODOS os registros sem limite
+   */
+  async buscarNCMs(search?: string): Promise<any[]> {
+    const params = new URLSearchParams();
+    if (search) params.append('search', search);
+    params.append('ativo', 'true');
+    params.append('apenasAnaliticos', 'true'); // Apenas NCMs de 8 dígitos
+    params.append('limit', '99999'); // Buscar todos
+
+    const response = await apiClient.get(`/cadastros/ncm?${params.toString()}`);
+    return response.data.itens || [];
+  },
+
+  /**
+   * Buscar lista de NBS do banco (apenas analíticos com 9 dígitos)
+   * Busca TODOS os registros sem limite
+   */
+  async buscarNBS(search?: string): Promise<any[]> {
+    const params = new URLSearchParams();
+    if (search) params.append('search', search);
+    params.append('ativo', 'true');
+    params.append('apenasAnaliticos', 'true'); // Apenas NBS de 9 dígitos
+    params.append('limit', '99999'); // Buscar todos
+
+    const response = await apiClient.get(`/cadastros/nbs?${params.toString()}`);
+    return response.data.itens || [];
+  },
+
+  /**
+   * Buscar lista de CSTs do banco
+   * Busca TODOS os registros
+   */
+  async buscarCSTs(): Promise<any[]> {
+    const params = new URLSearchParams();
+    params.append('ativo', 'true');
+    params.append('limit', '99999'); // Buscar todos
+
+    const response = await apiClient.get(`/cadastros/cst?${params.toString()}`);
+    return response.data.itens || [];
+  },
+
+  /**
+   * Buscar classificações tributárias por CST do banco
+   */
+  async buscarClassificacoesPorCSTBanco(cst: string): Promise<any[]> {
+    const params = new URLSearchParams();
+    params.append('cst', cst);
+    params.append('limit', '500');
+
+    const response = await apiClient.get(`/cadastros/classificacoes-tributarias?${params.toString()}`);
+    return response.data.itens || [];
+  },
+
   // ============================================
   // XML - VALIDAÇÃO E GERAÇÃO
   // ============================================

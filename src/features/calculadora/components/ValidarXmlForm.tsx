@@ -26,7 +26,7 @@ export const ValidarXmlForm: React.FC = () => {
       });
       setResultado(isValido);
     } catch (error) {
-      setResultado(false);
+      // Não seta resultado como false, deixa o isError tratar
       console.error('Erro ao validar XML:', error);
     }
   };
@@ -121,26 +121,16 @@ export const ValidarXmlForm: React.FC = () => {
         </div>
 
         {/* Resultado */}
-        {resultado !== null && (
-          <div
-            className={`p-4 rounded-lg ${
-              resultado
-                ? 'bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800'
-                : 'bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800'
-            }`}
-          >
+        {resultado !== null && resultado === true && (
+          <div className="p-4 rounded-lg bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800">
             <div className="flex items-center">
-              <div className={`text-2xl mr-3 ${resultado ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
-                {resultado ? '✓' : '✗'}
-              </div>
+              <div className="text-2xl mr-3 text-green-600 dark:text-green-400">✓</div>
               <div>
-                <p className={`font-semibold ${resultado ? 'text-green-800 dark:text-green-300' : 'text-red-800 dark:text-red-300'}`}>
-                  {resultado ? 'XML Válido' : 'XML Inválido'}
+                <p className="font-semibold text-green-800 dark:text-green-300">
+                  XML Válido
                 </p>
-                <p className={`text-sm ${resultado ? 'text-green-700 dark:text-green-400' : 'text-red-700 dark:text-red-400'}`}>
-                  {resultado
-                    ? 'O XML está em conformidade com o schema do ROC.'
-                    : 'O XML possui erros de validação. Verifique o conteúdo e tente novamente.'}
+                <p className="text-sm text-green-700 dark:text-green-400">
+                  O XML está em conformidade com o schema do ROC.
                 </p>
               </div>
             </div>
@@ -149,9 +139,19 @@ export const ValidarXmlForm: React.FC = () => {
 
         {validarXmlMutation.isError && (
           <div className="p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
-            <p className="text-sm text-red-800 dark:text-red-300">
-              Erro ao validar XML. Verifique se o conteúdo está correto e tente novamente.
-            </p>
+            <div className="flex items-center">
+              <div className="text-2xl mr-3 text-red-600 dark:text-red-400">✗</div>
+              <div className="flex-1">
+                <p className="font-semibold text-red-800 dark:text-red-300 mb-1">
+                  Erro ao Validar XML
+                </p>
+                <p className="text-sm text-red-700 dark:text-red-400">
+                  {(validarXmlMutation.error as any)?.response?.data?.message ||
+                   (validarXmlMutation.error as any)?.message ||
+                   'Erro ao validar XML. Verifique se o conteúdo está correto e tente novamente.'}
+                </p>
+              </div>
+            </div>
           </div>
         )}
       </div>

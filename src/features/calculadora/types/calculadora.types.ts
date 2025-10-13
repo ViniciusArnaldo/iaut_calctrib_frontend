@@ -45,9 +45,9 @@ export interface ItemOperacaoInput {
   baseCalculo: number;
   quantidade?: number;
   unidade?: string;
-  cClassTrib: string;
   impostoSeletivo?: ImpostoSeletivoInput;
   tributacaoRegular?: TributacaoRegularInput;
+  cClassTrib: string;
 }
 
 export interface CalcularRegimeGeralDTO {
@@ -63,25 +63,134 @@ export interface CalcularRegimeGeralDTO {
 // REGIME GERAL - RESPONSE
 // ============================================
 
+// Sub-estruturas da resposta
+export interface DiferencialAliquota {
+  pDif: number;
+  vDif: number;
+}
+
+export interface DevolucaoTributo {
+  vDevTrib: number;
+}
+
+export interface ReducaoAliquota {
+  pRedAliq: number;
+  pAliqEfet: number;
+}
+
+export interface TributacaoRegularResponse {
+  CSTReg: number;
+  cClassTribReg: string;
+  pAliqEfetRegIBSUF: number;
+  vTribRegIBSUF: number;
+  pAliqEfetRegIBSMun: number;
+  vTribRegIBSMun: number;
+  pAliqEfetRegCBS: number;
+  vTribRegCBS: number;
+}
+
+export interface CreditoPresumido {
+  cCredPres: number;
+  pCredPres: number;
+  vCredPres: number;
+  vCredPresCondSus: number;
+}
+
+export interface ImpostoSeletivoResponse {
+  CSTIS: number;
+  cClassTribIS: string;
+  vBCIS: number;
+  pIS: number;
+  pISEspec: number;
+  uTrib: string;
+  qTrib: number;
+  vIS: number;
+  memoriaCalculo?: string;
+}
+
 export interface ItemResultado {
+  numero: number;
   ncm: string;
+  nbs?: string;
+  cst: string;
+  cClassTrib: string;
   descricao?: string;
   baseCalculo: number;
+
+  // CBS
   valorCBS: number;
-  valorIBS: number;
-  valorIS: number;
   aliquotaCBS: number;
+  memoriaCalculoCBS?: string;
+
+  // IBS UF
+  valorIBSUF: number;
+  aliquotaIBSUF: number;
+  memoriaCalculoIBSUF?: string;
+
+  // IBS Município
+  valorIBSMun: number;
+  aliquotaIBSMun: number;
+  memoriaCalculoIBSMun?: string;
+
+  // IBS Total
+  valorIBS: number;
   aliquotaIBS: number;
+
+  // IS (Imposto Seletivo)
+  valorIS: number;
   aliquotaIS: number;
+  impostoSeletivo?: ImpostoSeletivoResponse;
+
+  // Diferencial de Alíquota
+  difCBS?: DiferencialAliquota;
+  difIBSUF?: DiferencialAliquota;
+  difIBSMun?: DiferencialAliquota;
+
+  // Devolução de Tributo
+  devTribCBS?: DevolucaoTributo;
+  devTribIBSUF?: DevolucaoTributo;
+  devTribIBSMun?: DevolucaoTributo;
+
+  // Redução de Alíquota
+  redCBS?: ReducaoAliquota;
+  redIBSUF?: ReducaoAliquota;
+  redIBSMun?: ReducaoAliquota;
+
+  // Tributação Regular
+  tribRegular?: TributacaoRegularResponse;
+
+  // Crédito Presumido
+  credPresIBS?: CreditoPresumido;
+  credPresCBS?: CreditoPresumido;
 }
 
 export interface ResultadoCalculoRegimeGeral {
   itens: ItemResultado[];
   totais: {
     baseCalculo: number;
-    valorCBS: number;
+
+    // IBS
     valorIBS: number;
+    valorIBSUF: number;
+    valorIBSMun: number;
+    vDifIBSUF: number;
+    vDifIBSMun: number;
+    vDevTribIBSUF: number;
+    vDevTribIBSMun: number;
+    vCredPresIBS: number;
+    vCredPresCondSusIBS: number;
+
+    // CBS
+    valorCBS: number;
+    vDifCBS: number;
+    vDevTribCBS: number;
+    vCredPresCBS: number;
+    vCredPresCondSusCBS: number;
+
+    // IS
     valorIS: number;
+
+    // Total Geral
     valorTotal: number;
   };
   municipio: string;
@@ -107,6 +216,11 @@ export interface CalculoHistorico {
     name: string;
     email: string;
   };
+  // Campos calculados pelo backend
+  numeroItens?: number;
+  totalTributos?: number;
+  municipioNome?: string;
+  dataOperacao?: string;
 }
 
 export interface HistoricoResponse {

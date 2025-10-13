@@ -5,6 +5,8 @@ import { Input } from '../../components/ui/Input';
 import { Select } from '../../components/ui/Select';
 import { Button } from '../../components/ui/Button';
 import { useHistorico } from '../../features/calculadora/hooks/useCalculadora';
+import { ResultadoCard } from '../../features/calculadora/components/ResultadoCard';
+import type { CalculoHistorico } from '../../features/calculadora/types/calculadora.types';
 
 export const HistoricoPage: React.FC = () => {
   const [filtros, setFiltros] = useState({
@@ -14,6 +16,7 @@ export const HistoricoPage: React.FC = () => {
   });
   const [page, setPage] = useState(1);
   const limit = 10;
+  const [calculoSelecionado, setCalculoSelecionado] = useState<CalculoHistorico | null>(null);
 
   const { data, isLoading } = useHistorico({
     ...filtros,
@@ -44,6 +47,57 @@ export const HistoricoPage: React.FC = () => {
     });
     setPage(1);
   };
+
+  const handleVerDetalhes = (calculo: CalculoHistorico) => {
+    setCalculoSelecionado(calculo);
+  };
+
+  const handleVoltar = () => {
+    setCalculoSelecionado(null);
+  };
+
+  // Se há um cálculo selecionado, mostrar detalhes
+  if (calculoSelecionado) {
+    return (
+      <DashboardLayout>
+        <div>
+          <div className="mb-6">
+            <Button
+              variant="secondary"
+              onClick={handleVoltar}
+              className="flex items-center space-x-2"
+            >
+              <svg
+                className="w-5 h-5"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M10 19l-7-7m0 0l7-7m-7 7h18"
+                />
+              </svg>
+              <span>Voltar ao Histórico</span>
+            </Button>
+          </div>
+
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
+            Detalhes do Cálculo
+          </h1>
+          <p className="text-sm text-gray-600 dark:text-gray-400 mb-6">
+            Realizado em {formatDate(calculoSelecionado.dataOperacao || calculoSelecionado.createdAt)} por {calculoSelecionado.user.name}
+          </p>
+
+          {calculoSelecionado.response && (
+            <ResultadoCard resultado={calculoSelecionado.response} />
+          )}
+        </div>
+      </DashboardLayout>
+    );
+  }
 
   return (
     <DashboardLayout>
@@ -125,7 +179,7 @@ export const HistoricoPage: React.FC = () => {
                     {data.itens.map((calculo: any) => (
                       <tr key={calculo.id} className="hover:bg-gray-50 dark:hover:bg-gray-700/50">
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-300">
-                          {formatDate(calculo.dataOperacao)}
+                          {formatDate(calculo.dataOperacao || calculo.createdAt)}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
                           <span className="px-2 py-1 text-xs font-semibold rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300">
@@ -133,16 +187,19 @@ export const HistoricoPage: React.FC = () => {
                           </span>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600 dark:text-gray-400">
-                          {calculo.uf} / {calculo.municipio?.nomeMunicipio || '-'}
+                          {calculo.uf} / {calculo.municipioNome || '-'}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600 dark:text-gray-400">
-                          {calculo.itens?.length || 0} item(ns)
+                          {calculo.numeroItens || 0} item(ns)
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm font-semibold text-gray-900 dark:text-gray-300">
                           {formatCurrency(calculo.totalTributos || 0)}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm">
-                          <button className="text-blue-600 dark:text-blue-400 hover:text-blue-900 dark:hover:text-blue-300 font-medium">
+                          <button
+                            onClick={() => handleVerDetalhes(calculo)}
+                            className="text-blue-600 dark:text-blue-400 hover:text-blue-900 dark:hover:text-blue-300 font-medium"
+                          >
                             Ver Detalhes
                           </button>
                         </td>

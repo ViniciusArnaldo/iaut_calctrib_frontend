@@ -17,4 +17,5 @@ export const ROUTES = {
   SUBSCRIPTIONS: '/subscriptions',
   USERS: '/users',
   FERRAMENTAS: '/ferramentas',
+  CADASTROS: '/cadastros',
 } as const;

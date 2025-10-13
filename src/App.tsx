@@ -13,6 +13,7 @@ import { HistoricoPage } from './pages/historico/HistoricoPage';
 import { SubscriptionsPage } from './pages/subscriptions/SubscriptionsPage';
 import { UsersPage } from './pages/users/UsersPage';
 import { FerramentasPage } from './pages/ferramentas/FerramentasPage';
+import { CadastrosPage } from './pages/cadastros/CadastrosPage';
 import { ROUTES } from './utils/constants';
 
 // Create React Query client
@@ -91,6 +92,15 @@ function App() {
               element={
                 <ProtectedRoute>
                   <FerramentasPage />
+                </ProtectedRoute>
+              }
+            />
+
+            <Route
+              path={ROUTES.CADASTROS}
+              element={
+                <ProtectedRoute>
+                  <CadastrosPage />
                 </ProtectedRoute>
               }
             />

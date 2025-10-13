@@ -8,7 +8,8 @@ import {
   CreditCard,
   Users,
   User,
-  LogOut
+  LogOut,
+  FolderKanban
 } from 'lucide-react';
 import { ROUTES } from '../../utils/constants';
 import { useAuth } from '../../features/auth/context/AuthContext';
@@ -66,6 +67,12 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen = true, onClose }) => {
             icon: <Wrench className={iconClasses} />,
             href: ROUTES.FERRAMENTAS,
             active: isActive(ROUTES.FERRAMENTAS),
+          },
+          {
+            label: 'Cadastros',
+            icon: <FolderKanban className={iconClasses} />,
+            href: ROUTES.CADASTROS,
+            active: isActive(ROUTES.CADASTROS),
           },
         ],
       },
