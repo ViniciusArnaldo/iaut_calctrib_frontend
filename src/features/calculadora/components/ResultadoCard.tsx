@@ -22,6 +22,88 @@ export const ResultadoCard: React.FC<Props> = ({ resultado }) => {
     return `${value.toFixed(4)}%`;
   };
 
+  // Verifica se é resultado de Base de Cálculo (apenas { baseCalculo: number })
+  if (resultado && 'baseCalculo' in resultado && !('totais' in resultado)) {
+    const resultadoBC = resultado as any;
+
+    // Campos possíveis de Base de Cálculo IS
+    const camposIS = [
+      { label: 'Valor Integral Cobrado', field: 'valorIntegralCobrado' },
+      { label: 'Ajuste Valor Operação', field: 'ajusteValorOperacao' },
+      { label: 'Juros', field: 'juros' },
+      { label: 'Multas', field: 'multas' },
+      { label: 'Acréscimos', field: 'acrescimos' },
+      { label: 'Encargos', field: 'encargos' },
+      { label: 'Descontos Condicionais', field: 'descontosCondicionais' },
+      { label: 'Frete Por Dentro', field: 'fretePorDentro' },
+      { label: 'Outros Tributos', field: 'outrosTributos' },
+      { label: 'Demais Importâncias', field: 'demaisImportancias' },
+      { label: 'ICMS', field: 'icms' },
+      { label: 'ISS', field: 'iss' },
+      { label: 'PIS', field: 'pis' },
+      { label: 'COFINS', field: 'cofins' },
+      { label: 'Bonificação', field: 'bonificacao' },
+      { label: 'Devolução Vendas', field: 'devolucaoVendas' },
+    ];
+
+    // Campos possíveis de Base de Cálculo CBS/IBS
+    const camposCBSIBS = [
+      { label: 'Valor do Fornecimento', field: 'valorFornecimento' },
+      { label: 'Ajuste Valor Operação', field: 'ajusteValorOperacao' },
+      { label: 'Juros', field: 'juros' },
+      { label: 'Multas', field: 'multas' },
+      { label: 'Acréscimos', field: 'acrescimos' },
+      { label: 'Encargos', field: 'encargos' },
+      { label: 'Descontos Condicionais', field: 'descontosCondicionais' },
+      { label: 'Frete Por Dentro', field: 'fretePorDentro' },
+      { label: 'Outros Tributos', field: 'outrosTributos' },
+      { label: 'Imposto Seletivo', field: 'impostoSeletivo' },
+      { label: 'Demais Importâncias', field: 'demaisImportancias' },
+      { label: 'ICMS', field: 'icms' },
+      { label: 'ISS', field: 'iss' },
+      { label: 'PIS', field: 'pis' },
+      { label: 'COFINS', field: 'cofins' },
+    ];
+
+    // Detecta qual tipo de base de cálculo baseado nos campos presentes
+    const campos = resultadoBC.valorFornecimento !== undefined ? camposCBSIBS : camposIS;
+    const camposPreenchidos = campos.filter(c => resultadoBC[c.field] !== undefined && resultadoBC[c.field] !== null && resultadoBC[c.field] !== 0);
+
+    return (
+      <Card>
+        <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-6">Resultado do Cálculo</h2>
+
+        {/* Campos Preenchidos */}
+        {camposPreenchidos.length > 0 && (
+          <div className="mb-6">
+            <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-4">Valores Informados</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+              {camposPreenchidos.map((campo) => (
+                <div key={campo.field} className="p-3 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg">
+                  <p className="text-xs text-gray-600 dark:text-gray-400">{campo.label}</p>
+                  <p className="text-sm font-semibold text-gray-900 dark:text-white">
+                    {formatCurrency(resultadoBC[campo.field])}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Resultado */}
+        <div className="p-6 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg text-center">
+          <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">Base de Cálculo Calculada</p>
+          <p className="text-4xl font-bold text-blue-600 dark:text-blue-400">
+            {formatCurrency(resultadoBC.baseCalculo)}
+          </p>
+          <p className="text-xs text-gray-500 dark:text-gray-400 mt-3">
+            Este é o valor da base de cálculo após aplicação de todas as regras tributárias
+          </p>
+        </div>
+      </Card>
+    );
+  }
+
   const handleGerarXml = async () => {
     try {
       const xml = await gerarXmlMutation.mutateAsync(resultado);
@@ -142,11 +224,13 @@ export const ResultadoCard: React.FC<Props> = ({ resultado }) => {
               <div className="flex items-start justify-between mb-3">
                 <div>
                   <h4 className="font-medium text-gray-900 dark:text-white">
-                    Item {item.numero} - {item.descricao || `NCM ${item.ncm}`}
+                    Item {item.numero} - {item.descricao || (item.nbs ? `NBS ${item.nbs}` : `NCM ${item.ncm}`)}
                   </h4>
                   <div className="text-sm text-gray-600 dark:text-gray-400 space-y-1 mt-1">
-                    <p>NCM: {item.ncm} | CST: {item.cst} | Class. Trib: {item.cClassTrib}</p>
-                    {item.nbs && <p>NBS: {item.nbs}</p>}
+                    {/* Mostra NCM apenas se não tiver NBS */}
+                    {item.ncm && !item.nbs && <p>NCM: {item.ncm} | CST: {item.cst} | Class. Trib: {item.cClassTrib}</p>}
+                    {/* Mostra NBS apenas se tiver NBS */}
+                    {item.nbs && <p>NBS: {item.nbs} | CST: {item.cst} | Class. Trib: {item.cClassTrib}</p>}
                   </div>
                 </div>
                 <div className="text-right">

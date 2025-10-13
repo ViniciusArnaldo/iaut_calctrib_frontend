@@ -35,6 +35,202 @@ export const HistoricoPage: React.FC = () => {
     }).format(value);
   };
 
+  const renderDadosEnviados = (request: any, tipo: string) => {
+    if (!request) return null;
+
+    // Regime Geral
+    if (tipo === 'REGIME_GERAL') {
+      return (
+        <div className="space-y-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="p-3 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg">
+              <p className="text-xs text-gray-600 dark:text-gray-400 mb-1">UF</p>
+              <p className="font-semibold text-gray-900 dark:text-white">{request.uf || '-'}</p>
+            </div>
+            <div className="p-3 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg">
+              <p className="text-xs text-gray-600 dark:text-gray-400 mb-1">Município</p>
+              <p className="font-semibold text-gray-900 dark:text-white">{request.municipio || '-'}</p>
+            </div>
+            <div className="p-3 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg">
+              <p className="text-xs text-gray-600 dark:text-gray-400 mb-1">Data/Hora Emissão</p>
+              <p className="font-semibold text-gray-900 dark:text-white">
+                {request.dataHoraEmissao ? new Date(request.dataHoraEmissao).toLocaleString('pt-BR') : '-'}
+              </p>
+            </div>
+          </div>
+
+          {request.itens && request.itens.length > 0 && (
+            <div>
+              <h4 className="font-medium text-gray-900 dark:text-white mb-3">Itens ({request.itens.length})</h4>
+              <div className="space-y-3">
+                {request.itens.map((item: any, index: number) => (
+                  <div key={index} className="p-4 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg">
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                      {/* Mostra NCM apenas se não tiver NBS */}
+                      {item.ncm && !item.nbs && (
+                        <div>
+                          <p className="text-xs text-gray-600 dark:text-gray-400">NCM</p>
+                          <p className="text-sm font-semibold text-gray-900 dark:text-white">{item.ncm}</p>
+                        </div>
+                      )}
+                      {/* Mostra NBS apenas se tiver NBS */}
+                      {item.nbs && (
+                        <div>
+                          <p className="text-xs text-gray-600 dark:text-gray-400">NBS</p>
+                          <p className="text-sm font-semibold text-gray-900 dark:text-white">{item.nbs}</p>
+                        </div>
+                      )}
+                      <div>
+                        <p className="text-xs text-gray-600 dark:text-gray-400">CST</p>
+                        <p className="text-sm font-semibold text-gray-900 dark:text-white">{item.cst || '-'}</p>
+                      </div>
+                      <div>
+                        <p className="text-xs text-gray-600 dark:text-gray-400">Base de Cálculo</p>
+                        <p className="text-sm font-semibold text-gray-900 dark:text-white">
+                          {item.baseCalculo ? formatCurrency(item.baseCalculo) : '-'}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+      );
+    }
+
+    // Base de Cálculo IS
+    if (tipo === 'BASE_CALCULO_IS') {
+      const campos = [
+        { label: 'Valor Integral Cobrado', field: 'valorIntegralCobrado' },
+        { label: 'Ajuste Valor Operação', field: 'ajusteValorOperacao' },
+        { label: 'Juros', field: 'juros' },
+        { label: 'Multas', field: 'multas' },
+        { label: 'Acréscimos', field: 'acrescimos' },
+        { label: 'Encargos', field: 'encargos' },
+        { label: 'Descontos Condicionais', field: 'descontosCondicionais' },
+        { label: 'Frete Por Dentro', field: 'fretePorDentro' },
+        { label: 'Outros Tributos', field: 'outrosTributos' },
+        { label: 'Demais Importâncias', field: 'demaisImportancias' },
+        { label: 'ICMS', field: 'icms' },
+        { label: 'ISS', field: 'iss' },
+        { label: 'PIS', field: 'pis' },
+        { label: 'COFINS', field: 'cofins' },
+        { label: 'Bonificação', field: 'bonificacao' },
+        { label: 'Devolução Vendas', field: 'devolucaoVendas' },
+      ];
+
+      const camposPreenchidos = campos.filter(c =>
+        request[c.field] !== undefined &&
+        request[c.field] !== null &&
+        request[c.field] !== 0
+      );
+
+      return (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+          {camposPreenchidos.map((campo) => (
+            <div key={campo.field} className="p-3 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg">
+              <p className="text-xs text-gray-600 dark:text-gray-400 mb-1">{campo.label}</p>
+              <p className="text-sm font-semibold text-gray-900 dark:text-white">
+                {formatCurrency(request[campo.field])}
+              </p>
+            </div>
+          ))}
+        </div>
+      );
+    }
+
+    // Base de Cálculo CBS/IBS
+    if (tipo === 'BASE_CALCULO_CIBS') {
+      const campos = [
+        { label: 'Valor do Fornecimento', field: 'valorFornecimento' },
+        { label: 'Ajuste Valor Operação', field: 'ajusteValorOperacao' },
+        { label: 'Juros', field: 'juros' },
+        { label: 'Multas', field: 'multas' },
+        { label: 'Acréscimos', field: 'acrescimos' },
+        { label: 'Encargos', field: 'encargos' },
+        { label: 'Descontos Condicionais', field: 'descontosCondicionais' },
+        { label: 'Frete Por Dentro', field: 'fretePorDentro' },
+        { label: 'Outros Tributos', field: 'outrosTributos' },
+        { label: 'Imposto Seletivo', field: 'impostoSeletivo' },
+        { label: 'Demais Importâncias', field: 'demaisImportancias' },
+        { label: 'ICMS', field: 'icms' },
+        { label: 'ISS', field: 'iss' },
+        { label: 'PIS', field: 'pis' },
+        { label: 'COFINS', field: 'cofins' },
+      ];
+
+      const camposPreenchidos = campos.filter(c =>
+        request[c.field] !== undefined &&
+        request[c.field] !== null &&
+        request[c.field] !== 0
+      );
+
+      return (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+          {camposPreenchidos.map((campo) => (
+            <div key={campo.field} className="p-3 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg">
+              <p className="text-xs text-gray-600 dark:text-gray-400 mb-1">{campo.label}</p>
+              <p className="text-sm font-semibold text-gray-900 dark:text-white">
+                {formatCurrency(request[campo.field])}
+              </p>
+            </div>
+          ))}
+        </div>
+      );
+    }
+
+    // Pedágio
+    if (tipo === 'PEDAGIO') {
+      return (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+          {request.codigoMunicipioOrigem && (
+            <div className="p-3 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg">
+              <p className="text-xs text-gray-600 dark:text-gray-400 mb-1">Município Origem</p>
+              <p className="text-sm font-semibold text-gray-900 dark:text-white">{request.codigoMunicipioOrigem}</p>
+            </div>
+          )}
+          {request.ufMunicipioOrigem && (
+            <div className="p-3 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg">
+              <p className="text-xs text-gray-600 dark:text-gray-400 mb-1">UF Origem</p>
+              <p className="text-sm font-semibold text-gray-900 dark:text-white">{request.ufMunicipioOrigem}</p>
+            </div>
+          )}
+          {request.codigoMunicipioDestino && (
+            <div className="p-3 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg">
+              <p className="text-xs text-gray-600 dark:text-gray-400 mb-1">Município Destino</p>
+              <p className="text-sm font-semibold text-gray-900 dark:text-white">{request.codigoMunicipioDestino}</p>
+            </div>
+          )}
+          {request.ufMunicipioDestino && (
+            <div className="p-3 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg">
+              <p className="text-xs text-gray-600 dark:text-gray-400 mb-1">UF Destino</p>
+              <p className="text-sm font-semibold text-gray-900 dark:text-white">{request.ufMunicipioDestino}</p>
+            </div>
+          )}
+          {request.baseCalculo !== undefined && (
+            <div className="p-3 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg">
+              <p className="text-xs text-gray-600 dark:text-gray-400 mb-1">Base de Cálculo</p>
+              <p className="text-sm font-semibold text-gray-900 dark:text-white">
+                {formatCurrency(request.baseCalculo)}
+              </p>
+            </div>
+          )}
+        </div>
+      );
+    }
+
+    // Fallback para outros tipos - mostra JSON formatado
+    return (
+      <div className="bg-white dark:bg-gray-800 rounded-lg p-4 overflow-x-auto">
+        <pre className="text-xs text-gray-700 dark:text-gray-300 whitespace-pre-wrap">
+          {JSON.stringify(request, null, 2)}
+        </pre>
+      </div>
+    );
+  };
+
   const handleFilter = () => {
     setPage(1); // Reset para primeira página ao filtrar
   };
@@ -91,6 +287,19 @@ export const HistoricoPage: React.FC = () => {
             Realizado em {formatDate(calculoSelecionado.dataOperacao || calculoSelecionado.createdAt)} por {calculoSelecionado.user.name}
           </p>
 
+          {/* Dados Enviados (Request) */}
+          {calculoSelecionado.request && (
+            <Card className="mb-6">
+              <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
+                Dados Enviados
+              </h2>
+              <div className="bg-gray-50 dark:bg-gray-900/20 rounded-lg p-4">
+                {renderDadosEnviados(calculoSelecionado.request, calculoSelecionado.tipo)}
+              </div>
+            </Card>
+          )}
+
+          {/* Resultado do Cálculo */}
           {calculoSelecionado.response && (
             <ResultadoCard resultado={calculoSelecionado.response} />
           )}

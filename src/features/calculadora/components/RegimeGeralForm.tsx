@@ -304,12 +304,16 @@ export const RegimeGeralForm: React.FC<Props> = ({ onSuccess }) => {
                       placeholder={loadingCsts ? 'Carregando...' : 'Selecione o CST'}
                       options={
                         csts?.map((cst) => ({
-                          value: cst.codigo,
+                          value: `${cst.id}-${cst.codigo}`, // Usa ID como parte da chave para garantir unicidade
                           label: `${cst.codigo} - ${cst.descricao}`,
                         })) || []
                       }
-                      value={watch(`itens.${index}.cst`)}
-                      onChange={(value) => setValue(`itens.${index}.cst`, value)}
+                      value={watch(`itens.${index}.cst`) ? `${csts?.find(c => c.codigo === watch(`itens.${index}.cst`))?.id}-${watch(`itens.${index}.cst`)}` : ''}
+                      onChange={(value) => {
+                        // Extrai apenas o código (remove o ID)
+                        const codigo = value.split('-').slice(1).join('-');
+                        setValue(`itens.${index}.cst`, codigo);
+                      }}
                       error={errors.itens?.[index]?.cst?.message}
                       disabled={loadingCsts}
                       helperText="3 dígitos"

@@ -46,13 +46,25 @@ export const BaseCalculoISForm: React.FC<Props> = ({ onSuccess }) => {
 
   const onSubmit = async (data: FormData) => {
     try {
-      // Converter apenas os campos preenchidos para número
-      const payload: any = {};
-      Object.entries(data).forEach(([key, value]) => {
-        if (value && value.trim() !== '') {
-          payload[key] = Number(value);
-        }
-      });
+      // Converter todos os campos para número (0 se vazio)
+      const payload = {
+        valorIntegralCobrado: Number(data.valorIntegralCobrado) || 0,
+        ajusteValorOperacao: Number(data.ajusteValorOperacao) || 0,
+        juros: Number(data.juros) || 0,
+        multas: Number(data.multas) || 0,
+        acrescimos: Number(data.acrescimos) || 0,
+        encargos: Number(data.encargos) || 0,
+        descontosCondicionais: Number(data.descontosCondicionais) || 0,
+        fretePorDentro: Number(data.fretePorDentro) || 0,
+        outrosTributos: Number(data.outrosTributos) || 0,
+        demaisImportancias: Number(data.demaisImportancias) || 0,
+        icms: Number(data.icms) || 0,
+        iss: Number(data.iss) || 0,
+        pis: Number(data.pis) || 0,
+        cofins: Number(data.cofins) || 0,
+        bonificacao: Number(data.bonificacao) || 0,
+        devolucaoVendas: Number(data.devolucaoVendas) || 0,
+      };
 
       const resultado = await calcularBaseISMutation.mutateAsync(payload);
       if (onSuccess) onSuccess(resultado);
