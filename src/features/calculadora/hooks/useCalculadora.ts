@@ -19,6 +19,7 @@ export const useCalcularRegimeGeral = () => {
       // Invalida cache de histórico e estatísticas após novo cálculo
       queryClient.invalidateQueries({ queryKey: ['historico'] });
       queryClient.invalidateQueries({ queryKey: ['estatisticas'] });
+      queryClient.invalidateQueries({ queryKey: ['usage'] });
     },
   });
 };
@@ -34,6 +35,7 @@ export const useCalcularPedagio = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['historico'] });
       queryClient.invalidateQueries({ queryKey: ['estatisticas'] });
+      queryClient.invalidateQueries({ queryKey: ['usage'] });
     },
   });
 };
@@ -49,6 +51,7 @@ export const useCalcularBaseCalculoIS = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['historico'] });
       queryClient.invalidateQueries({ queryKey: ['estatisticas'] });
+      queryClient.invalidateQueries({ queryKey: ['usage'] });
     },
   });
 };
@@ -64,6 +67,7 @@ export const useCalcularBaseCalculoCBSIBS = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['historico'] });
       queryClient.invalidateQueries({ queryKey: ['estatisticas'] });
+      queryClient.invalidateQueries({ queryKey: ['usage'] });
     },
   });
 };
