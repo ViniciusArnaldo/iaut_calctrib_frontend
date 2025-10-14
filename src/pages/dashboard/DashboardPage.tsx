@@ -223,21 +223,6 @@ export const DashboardPage: React.FC = () => {
                   </div>
                 </div>
               </div>
-
-              {/* Dica */}
-              <div className="p-3 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg">
-                <div className="flex items-start">
-                  <AlertCircle className="w-4 h-4 text-green-600 dark:text-green-400 mt-0.5 mr-2 flex-shrink-0" />
-                  <div>
-                    <p className="text-sm font-medium text-green-900 dark:text-green-300">
-                      Nova funcionalidade
-                    </p>
-                    <p className="text-xs text-green-700 dark:text-green-400 mt-1">
-                      Agora você pode validar e gerar XMLs ROC
-                    </p>
-                  </div>
-                </div>
-              </div>
             </div>
           </Card>
         </div>

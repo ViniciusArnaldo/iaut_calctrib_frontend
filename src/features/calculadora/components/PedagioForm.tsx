@@ -2,12 +2,17 @@ import React, { useEffect } from 'react';
 import { useForm, useFieldArray } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
+import { useNavigate } from 'react-router-dom';
 import { Button } from '../../../components/ui/Button';
 import { Input } from '../../../components/ui/Input';
 import { Select } from '../../../components/ui/Select';
+import { SearchableSelect } from '../../../components/ui/SearchableSelect';
 import { Card } from '../../../components/ui/Card';
-import { useUFs, useMunicipios } from '../hooks/useDadosAbertos';
+import { useUFs, useMunicipios, useCSTsBanco, useClassificacoesPorCSTBanco } from '../hooks/useDadosAbertos';
 import { useCalcularPedagio } from '../hooks/useCalculadora';
+import { ROUTES } from '../../../utils/constants';
+import { useAuth } from '../../auth/hooks/useAuth';
+import axios from 'axios';
 
 const trechoSchema = z.object({
   municipio: z.string().min(1, 'Selecione um município'),
@@ -32,7 +37,10 @@ interface Props {
 }
 
 export const PedagioForm: React.FC<Props> = ({ onSuccess }) => {
+  const navigate = useNavigate();
+  const { user } = useAuth();
   const { data: ufs, isLoading: loadingUfs } = useUFs();
+  const { data: csts, isLoading: loadingCsts } = useCSTsBanco();
   const calcularPedagioMutation = useCalcularPedagio();
 
   const {
@@ -66,6 +74,10 @@ export const PedagioForm: React.FC<Props> = ({ onSuccess }) => {
 
   const selectedUfOrigem = watch('ufMunicipioOrigem');
   const { data: municipiosOrigem, isLoading: loadingMunicipiosOrigem } = useMunicipios(selectedUfOrigem);
+
+  // Watch CST para buscar classificações do banco
+  const cstValue = watch('cst');
+  const { data: classificacoes, isLoading: loadingClassificacoes } = useClassificacoesPorCSTBanco(cstValue);
 
   useEffect(() => {
     if (selectedUfOrigem) {
@@ -166,18 +178,27 @@ export const PedagioForm: React.FC<Props> = ({ onSuccess }) => {
         <div>
           <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-4">Dados Tributários</h3>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <Input
-              label="CST (Código Situação Tributária)"
-              type="text"
-              placeholder="000"
-              maxLength={3}
-              helperText="3 dígitos"
+            <SearchableSelect
+              label="CST (Código Situação Tributária) *"
+              placeholder={loadingCsts ? 'Carregando...' : 'Selecione o CST'}
+              options={
+                csts?.map((cst) => ({
+                  value: `${cst.id}-${cst.codigo}`,
+                  label: `${cst.codigo} - ${cst.descricao}`,
+                })) || []
+              }
+              value={watch('cst') ? `${csts?.find(c => c.codigo === watch('cst'))?.id}-${watch('cst')}` : ''}
+              onChange={(value) => {
+                const codigo = value.split('-').slice(1).join('-');
+                setValue('cst', codigo);
+              }}
               error={errors.cst?.message}
-              {...register('cst')}
+              disabled={loadingCsts}
+              helperText="3 dígitos"
             />
 
             <Input
-              label="Base de Cálculo (R$)"
+              label="Base de Cálculo (R$) *"
               type="number"
               step="0.01"
               placeholder="1000.00"
@@ -185,14 +206,28 @@ export const PedagioForm: React.FC<Props> = ({ onSuccess }) => {
               {...register('baseCalculo')}
             />
 
-            <Input
-              label="Classificação Tributária"
-              type="text"
-              placeholder="000000"
-              maxLength={6}
-              helperText="6 dígitos (obrigatório)"
+            <SearchableSelect
+              label="Classificação Tributária *"
+              placeholder={
+                loadingClassificacoes
+                  ? 'Carregando...'
+                  : !cstValue || cstValue.length < 3
+                  ? 'Preencha o CST primeiro'
+                  : classificacoes && classificacoes.length > 0
+                  ? 'Selecione a classificação'
+                  : 'Nenhuma classificação disponível'
+              }
+              options={
+                classificacoes?.map((c) => ({
+                  value: c.codigo,
+                  label: `${c.codigo} - ${c.descricao}`,
+                })) || []
+              }
+              value={watch('cClassTrib')}
+              onChange={(value) => setValue('cClassTrib', value)}
               error={errors.cClassTrib?.message}
-              {...register('cClassTrib')}
+              disabled={!cstValue || cstValue.length < 3 || loadingClassificacoes}
+              helperText="6 dígitos (obrigatório)"
             />
           </div>
         </div>
@@ -214,6 +249,8 @@ export const PedagioForm: React.FC<Props> = ({ onSuccess }) => {
                 key={field.id}
                 index={index}
                 register={register}
+                watch={watch}
+                setValue={setValue}
                 errors={errors}
                 ufs={ufs || []}
                 loadingUfs={loadingUfs}
@@ -223,6 +260,43 @@ export const PedagioForm: React.FC<Props> = ({ onSuccess }) => {
             ))}
           </div>
         </div>
+
+        {/* Mensagem de erro */}
+        {calcularPedagioMutation.isError && (
+          <div className={`p-4 border rounded-lg ${
+            axios.isAxiosError(calcularPedagioMutation.error) && calcularPedagioMutation.error.response?.status === 403
+              ? 'bg-orange-50 dark:bg-orange-900/20 border-orange-200 dark:border-orange-800'
+              : 'bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800'
+          }`}>
+            {axios.isAxiosError(calcularPedagioMutation.error) && calcularPedagioMutation.error.response?.status === 403 ? (
+              <div>
+                <p className="text-sm font-semibold text-orange-900 dark:text-orange-300 mb-2">
+                  Limite de cálculos atingido
+                </p>
+                <p className="text-sm text-orange-700 dark:text-orange-400 mb-3">
+                  {user?.role === 'ADMIN'
+                    ? 'Você atingiu o limite de cálculos do seu plano atual. Faça upgrade para continuar calculando.'
+                    : 'O limite de cálculos do plano foi atingido. Entre em contato com o administrador da conta para fazer upgrade do plano.'}
+                </p>
+                {user?.role === 'ADMIN' && (
+                  <button
+                    type="button"
+                    onClick={() => navigate(ROUTES.SUBSCRIPTIONS)}
+                    className="text-sm font-medium text-orange-600 dark:text-orange-400 hover:text-orange-700 dark:hover:text-orange-300 underline"
+                  >
+                    Ver planos e fazer upgrade →
+                  </button>
+                )}
+              </div>
+            ) : (
+              <p className="text-sm text-red-600 dark:text-red-400">
+                {axios.isAxiosError(calcularPedagioMutation.error) && calcularPedagioMutation.error.response?.data?.message
+                  ? calcularPedagioMutation.error.response.data.message
+                  : 'Erro ao realizar cálculo. Verifique os dados e tente novamente.'}
+              </p>
+            )}
+          </div>
+        )}
 
         {/* Botão */}
         <Button
@@ -242,6 +316,8 @@ export const PedagioForm: React.FC<Props> = ({ onSuccess }) => {
 interface TrechoFieldsProps {
   index: number;
   register: any;
+  watch: any;
+  setValue: any;
   errors: any;
   ufs: any[];
   loadingUfs: boolean;
@@ -252,15 +328,23 @@ interface TrechoFieldsProps {
 const TrechoFields: React.FC<TrechoFieldsProps> = ({
   index,
   register,
+  watch,
+  setValue,
   errors,
   ufs,
   loadingUfs,
   onRemove,
   canRemove,
 }) => {
-  const { watch } = useForm();
   const selectedUf = watch(`trechos.${index}.uf`);
   const { data: municipios, isLoading: loadingMunicipios } = useMunicipios(selectedUf);
+
+  // Reset município quando UF mudar
+  useEffect(() => {
+    if (selectedUf) {
+      setValue(`trechos.${index}.municipio`, '');
+    }
+  }, [selectedUf, setValue, index]);
 
   return (
     <div className="p-4 border border-gray-200 dark:border-gray-700 rounded-lg bg-gray-50 dark:bg-gray-800">

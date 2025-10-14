@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import { useForm, useFieldArray } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
+import { useNavigate } from 'react-router-dom';
 import { Button } from '../../../components/ui/Button';
 import { Input } from '../../../components/ui/Input';
 import { Select } from '../../../components/ui/Select';
@@ -10,6 +11,9 @@ import { Card } from '../../../components/ui/Card';
 import { useUFs, useMunicipios, useNCMsBanco, useNBSBanco, useCSTsBanco, useClassificacoesPorCSTBanco } from '../hooks/useDadosAbertos';
 import { useCalcularRegimeGeral } from '../hooks/useCalculadora';
 import type { ResultadoCalculoRegimeGeral } from '../types/calculadora.types';
+import { ROUTES } from '../../../utils/constants';
+import { useAuth } from '../../auth/hooks/useAuth';
+import axios from 'axios';
 
 const itemSchema = z.object({
   ncm: z.string().optional(),
@@ -54,6 +58,8 @@ interface Props {
 }
 
 export const RegimeGeralForm: React.FC<Props> = ({ onSuccess }) => {
+  const navigate = useNavigate();
+  const { user } = useAuth();
   const calcularMutation = useCalcularRegimeGeral();
   const { data: ufs, isLoading: loadingUfs } = useUFs();
 
@@ -103,6 +109,21 @@ export const RegimeGeralForm: React.FC<Props> = ({ onSuccess }) => {
     }
   }, [selectedUf, setValue]);
 
+  // Limpa NCM ou NBS quando trocar tipo de operação
+  const tipoOperacao = watch('tipoOperacao');
+  useEffect(() => {
+    const itens = watch('itens');
+    itens.forEach((_, index) => {
+      if (tipoOperacao === 'MERCADORIA') {
+        // Se mudou para mercadoria, limpa NBS
+        setValue(`itens.${index}.nbs`, '');
+      } else {
+        // Se mudou para serviço, limpa NCM
+        setValue(`itens.${index}.ncm`, '');
+      }
+    });
+  }, [tipoOperacao, setValue]);
+
   const onSubmit = async (data: FormData) => {
     try {
       // Gerar ID único para o ROC
@@ -118,16 +139,31 @@ export const RegimeGeralForm: React.FC<Props> = ({ onSuccess }) => {
         dataHoraEmissao: dataISO,
         municipio: Number(data.municipio),
         uf: data.uf,
-        itens: data.itens.map((item, index) => ({
-          numero: index + 1,
-          ncm: item.ncm || undefined,
-          nbs: item.nbs || undefined,
-          cst: item.cst,
-          baseCalculo: Number(item.baseCalculo),
-          quantidade: item.quantidade ? Number(item.quantidade) : undefined,
-          unidade: item.unidade || undefined,
-          cClassTrib: item.cClassTrib,
-        })),
+        itens: data.itens.map((item, index) => {
+          const itemPayload: any = {
+            numero: index + 1,
+            cst: item.cst,
+            baseCalculo: Number(item.baseCalculo),
+            cClassTrib: item.cClassTrib,
+          };
+
+          // Adiciona NCM ou NBS, mas NUNCA ambos
+          if (item.ncm && item.ncm.trim() !== '') {
+            itemPayload.ncm = item.ncm;
+          } else if (item.nbs && item.nbs.trim() !== '') {
+            itemPayload.nbs = item.nbs;
+          }
+
+          // Campos opcionais apenas se preenchidos
+          if (item.quantidade && item.quantidade.trim() !== '') {
+            itemPayload.quantidade = Number(item.quantidade);
+          }
+          if (item.unidade && item.unidade.trim() !== '') {
+            itemPayload.unidade = item.unidade;
+          }
+
+          return itemPayload;
+        }),
       };
 
       const resultado = await calcularMutation.mutateAsync(payload);
@@ -384,10 +420,38 @@ export const RegimeGeralForm: React.FC<Props> = ({ onSuccess }) => {
 
         {/* Mensagem de erro */}
         {calcularMutation.isError && (
-          <div className="p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
-            <p className="text-sm text-red-600 dark:text-red-400">
-              Erro ao realizar cálculo. Verifique os dados e tente novamente.
-            </p>
+          <div className={`p-4 border rounded-lg ${
+            axios.isAxiosError(calcularMutation.error) && calcularMutation.error.response?.status === 403
+              ? 'bg-orange-50 dark:bg-orange-900/20 border-orange-200 dark:border-orange-800'
+              : 'bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800'
+          }`}>
+            {axios.isAxiosError(calcularMutation.error) && calcularMutation.error.response?.status === 403 ? (
+              <div>
+                <p className="text-sm font-semibold text-orange-900 dark:text-orange-300 mb-2">
+                  Limite de cálculos atingido
+                </p>
+                <p className="text-sm text-orange-700 dark:text-orange-400 mb-3">
+                  {user?.role === 'ADMIN'
+                    ? 'Você atingiu o limite de cálculos do seu plano atual. Faça upgrade para continuar calculando.'
+                    : 'O limite de cálculos do plano foi atingido. Entre em contato com o administrador da conta para fazer upgrade do plano.'}
+                </p>
+                {user?.role === 'ADMIN' && (
+                  <button
+                    type="button"
+                    onClick={() => navigate(ROUTES.SUBSCRIPTIONS)}
+                    className="text-sm font-medium text-orange-600 dark:text-orange-400 hover:text-orange-700 dark:hover:text-orange-300 underline"
+                  >
+                    Ver planos e fazer upgrade →
+                  </button>
+                )}
+              </div>
+            ) : (
+              <p className="text-sm text-red-600 dark:text-red-400">
+                {axios.isAxiosError(calcularMutation.error) && calcularMutation.error.response?.data?.message
+                  ? calcularMutation.error.response.data.message
+                  : 'Erro ao realizar cálculo. Verifique os dados e tente novamente.'}
+              </p>
+            )}
           </div>
         )}
 

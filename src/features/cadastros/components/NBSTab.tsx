@@ -11,8 +11,10 @@ import {
 } from '../hooks/useNBS';
 import type { NBSFilters } from '../types';
 import { ConfirmDialog } from '../../../components/ui/ConfirmDialog';
+import { useAuth } from '../../auth/hooks/useAuth';
 
 export const NBSTab: React.FC = () => {
+  const { user } = useAuth();
   const [filters, setFilters] = useState<NBSFilters>({
     page: 1,
     limit: 20,
@@ -86,21 +88,23 @@ export const NBSTab: React.FC = () => {
           </div>
         </form>
 
-        {/* Action Buttons */}
-        <div className="flex gap-2">
-          <button
-            onClick={handleImportClick}
-            disabled={importMutation.isPending}
-            className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-          >
-            {importMutation.isPending ? (
-              <RefreshCw className="h-4 w-4 animate-spin" />
-            ) : (
-              <Download className="h-4 w-4" />
-            )}
-            Sincronização Automática
-          </button>
-        </div>
+        {/* Action Buttons - Only for ADMIN */}
+        {user?.role === 'ADMIN' && (
+          <div className="flex gap-2">
+            <button
+              onClick={handleImportClick}
+              disabled={importMutation.isPending}
+              className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            >
+              {importMutation.isPending ? (
+                <RefreshCw className="h-4 w-4 animate-spin" />
+              ) : (
+                <Download className="h-4 w-4" />
+              )}
+              Sincronização Automática
+            </button>
+          </div>
+        )}
       </div>
 
       {/* Table */}

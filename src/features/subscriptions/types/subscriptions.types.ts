@@ -1,4 +1,4 @@
-export type SubscriptionPlan = 'BASIC' | 'PROFESSIONAL' | 'ENTERPRISE';
+export type SubscriptionPlan = 'TRIAL' | 'BASIC' | 'PROFESSIONAL' | 'ENTERPRISE';
 export type SubscriptionStatus = 'ACTIVE' | 'CANCELLED' | 'EXPIRED';
 
 export interface Subscription {

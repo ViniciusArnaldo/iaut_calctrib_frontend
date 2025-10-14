@@ -2,10 +2,14 @@ import React from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
+import { useNavigate } from 'react-router-dom';
 import { Button } from '../../../components/ui/Button';
 import { Input } from '../../../components/ui/Input';
 import { Card } from '../../../components/ui/Card';
 import { useCalcularBaseCalculoCBSIBS } from '../hooks/useCalculadora';
+import { ROUTES } from '../../../utils/constants';
+import { useAuth } from '../../auth/hooks/useAuth';
+import axios from 'axios';
 
 const baseCalculoCBSIBSSchema = z.object({
   valorFornecimento: z.string().optional(),
@@ -32,6 +36,8 @@ interface Props {
 }
 
 export const BaseCalculoCBSIBSForm: React.FC<Props> = ({ onSuccess }) => {
+  const navigate = useNavigate();
+  const { user } = useAuth();
   const calcularBaseCBSIBSMutation = useCalcularBaseCalculoCBSIBS();
 
   const {
@@ -229,6 +235,43 @@ export const BaseCalculoCBSIBSForm: React.FC<Props> = ({ onSuccess }) => {
             />
           </div>
         </div>
+
+        {/* Mensagem de erro */}
+        {calcularBaseCBSIBSMutation.isError && (
+          <div className={`p-4 border rounded-lg ${
+            axios.isAxiosError(calcularBaseCBSIBSMutation.error) && calcularBaseCBSIBSMutation.error.response?.status === 403
+              ? 'bg-orange-50 dark:bg-orange-900/20 border-orange-200 dark:border-orange-800'
+              : 'bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800'
+          }`}>
+            {axios.isAxiosError(calcularBaseCBSIBSMutation.error) && calcularBaseCBSIBSMutation.error.response?.status === 403 ? (
+              <div>
+                <p className="text-sm font-semibold text-orange-900 dark:text-orange-300 mb-2">
+                  Limite de cálculos atingido
+                </p>
+                <p className="text-sm text-orange-700 dark:text-orange-400 mb-3">
+                  {user?.role === 'ADMIN'
+                    ? 'Você atingiu o limite de cálculos do seu plano atual. Faça upgrade para continuar calculando.'
+                    : 'O limite de cálculos do plano foi atingido. Entre em contato com o administrador da conta para fazer upgrade do plano.'}
+                </p>
+                {user?.role === 'ADMIN' && (
+                  <button
+                    type="button"
+                    onClick={() => navigate(ROUTES.SUBSCRIPTIONS)}
+                    className="text-sm font-medium text-orange-600 dark:text-orange-400 hover:text-orange-700 dark:hover:text-orange-300 underline"
+                  >
+                    Ver planos e fazer upgrade →
+                  </button>
+                )}
+              </div>
+            ) : (
+              <p className="text-sm text-red-600 dark:text-red-400">
+                {axios.isAxiosError(calcularBaseCBSIBSMutation.error) && calcularBaseCBSIBSMutation.error.response?.data?.message
+                  ? calcularBaseCBSIBSMutation.error.response.data.message
+                  : 'Erro ao realizar cálculo. Verifique os dados e tente novamente.'}
+              </p>
+            )}
+          </div>
+        )}
 
         {/* Botão */}
         <Button

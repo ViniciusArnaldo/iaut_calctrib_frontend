@@ -10,9 +10,17 @@ interface Props {
 }
 
 export const PlanCard: React.FC<Props> = ({ plan, currentPlan, onSelect, isLoading }) => {
+  // Define a ordem hierárquica dos planos
+  const planOrder: Record<SubscriptionPlan, number> = {
+    TRIAL: 0,
+    BASIC: 1,
+    PROFESSIONAL: 2,
+    ENTERPRISE: 3,
+  };
+
   const isCurrent = currentPlan === plan.plano;
-  const isUpgrade = currentPlan && plan.plano > currentPlan;
-  const isDowngrade = currentPlan && plan.plano < currentPlan;
+  const isUpgrade = currentPlan && planOrder[plan.plano] > planOrder[currentPlan];
+  const isDowngrade = currentPlan && planOrder[plan.plano] < planOrder[currentPlan];
 
   const formatCurrency = (value: number) => {
     return new Intl.NumberFormat('pt-BR', {

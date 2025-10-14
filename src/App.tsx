@@ -5,6 +5,7 @@ import { ThemeProvider } from './contexts/ThemeContext';
 import { ProtectedRoute } from './components/common/ProtectedRoute';
 import { ToastContainer } from './components/common/ToastContainer';
 import { useToast } from './hooks/useToast';
+import { LandingPage } from './pages/landing/LandingPage';
 import { LoginPage } from './pages/auth/LoginPage';
 import { RegisterPage } from './pages/auth/RegisterPage';
 import { DashboardPage } from './pages/dashboard/DashboardPage';
@@ -38,6 +39,7 @@ function App() {
             <ToastContainer toasts={toasts} onRemove={removeToast} />
             <Routes>
               {/* Public Routes */}
+              <Route path="/" element={<LandingPage />} />
               <Route path={ROUTES.LOGIN} element={<LoginPage />} />
               <Route path={ROUTES.REGISTER} element={<RegisterPage />} />
 
@@ -105,11 +107,8 @@ function App() {
               }
             />
 
-            {/* Redirect root to dashboard */}
-            <Route path="/" element={<Navigate to={ROUTES.DASHBOARD} replace />} />
-
-            {/* 404 - Redirect to dashboard */}
-            <Route path="*" element={<Navigate to={ROUTES.DASHBOARD} replace />} />
+            {/* 404 - Redirect to landing */}
+            <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </AuthProvider>
       </BrowserRouter>

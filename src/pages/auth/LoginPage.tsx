@@ -7,7 +7,6 @@ import { Button } from '../../components/ui/Button';
 import { Input } from '../../components/ui/Input';
 import { Card } from '../../components/ui/Card';
 import { useLogin } from '../../features/auth/hooks/useLogin';
-import { ROUTES } from '../../utils/constants';
 
 const loginSchema = z.object({
   email: z.string().email('Email inválido'),
@@ -81,7 +80,7 @@ export const LoginPage: React.FC = () => {
             <p className="text-sm text-gray-600 dark:text-gray-400">
               Não tem uma conta?{' '}
               <Link
-                to={ROUTES.REGISTER}
+                to="/"
                 className="font-medium text-primary-600 dark:text-primary-400 hover:text-primary-500 dark:hover:text-primary-300"
               >
                 Cadastre-se

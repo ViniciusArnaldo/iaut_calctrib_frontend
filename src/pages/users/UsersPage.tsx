@@ -19,6 +19,11 @@ import { z } from 'zod';
 
 const userSchema = z.object({
   name: z.string().min(3, 'Nome deve ter pelo menos 3 caracteres'),
+  cpf: z
+    .string()
+    .regex(/^\d{11}$/, 'CPF deve conter exatamente 11 dígitos')
+    .min(11, 'CPF inválido')
+    .max(11, 'CPF inválido'),
   email: z.string().email('Email inválido'),
   password: z.string().min(8, 'Senha deve ter pelo menos 8 caracteres'),
   role: z.enum(['ADMIN', 'USER']),
@@ -233,12 +238,29 @@ export const UsersPage: React.FC = () => {
                 <Input
                   label="Nome"
                   type="text"
+                  placeholder="João Silva"
                   error={errors.name?.message}
                   {...register('name')}
                 />
                 <Input
+                  label="CPF"
+                  type="text"
+                  placeholder="12345678900"
+                  helperText="Apenas números (11 dígitos)"
+                  error={errors.cpf?.message}
+                  {...register('cpf', {
+                    onChange: (e) => {
+                      // Remove tudo que não é número
+                      const value = e.target.value.replace(/\D/g, '');
+                      e.target.value = value;
+                    },
+                  })}
+                  maxLength={11}
+                />
+                <Input
                   label="Email"
                   type="email"
+                  placeholder="joao@empresa.com"
                   error={errors.email?.message}
                   {...register('email')}
                 />
