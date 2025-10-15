@@ -4,7 +4,7 @@ import { Card } from '../../components/ui/Card';
 import { Button } from '../../components/ui/Button';
 import { Input } from '../../components/ui/Input';
 import { ConfirmDialog } from '../../components/ui/ConfirmDialog';
-import { AlertCircle } from 'lucide-react';
+import { AlertCircle, PanelLeftOpen, PanelLeftClose } from 'lucide-react';
 import { UploadExcelCsv } from '../../features/base-simulacao/components/UploadExcelCsv';
 import { TabelaLinhas } from '../../features/base-simulacao/components/TabelaLinhas';
 import {
@@ -26,6 +26,7 @@ export const BaseSimulacaoPage: React.FC = () => {
   const [baseAtualId, setBaseAtualId] = useState<number | null>(null);
   const [showUpload, setShowUpload] = useState(false);
   const [feedback, setFeedback] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
+  const [hideSidebar, setHideSidebar] = useState(false);
 
   // Estados para modais de confirmação
   const [confirmDialog, setConfirmDialog] = useState<{
@@ -85,10 +86,10 @@ export const BaseSimulacaoPage: React.FC = () => {
     setBaseAtualId(baseId);
   };
 
-  const handleDataParsed = async (linhas: Partial<LinhaBaseSimulacao>[]) => {
+  const handleDataParsed = async (linhas: Partial<LinhaBaseSimulacao>[]): Promise<void> => {
     if (!baseAtualId) {
       setFeedback({ type: 'error', message: 'Erro: Nenhuma base selecionada' });
-      return;
+      throw new Error('Nenhuma base selecionada');
     }
 
     try {
@@ -102,12 +103,9 @@ export const BaseSimulacaoPage: React.FC = () => {
           })),
         },
       });
-
-      setShowUpload(false);
-      setFeedback({ type: 'success', message: `${linhas.length} linhas importadas e salvas com sucesso!` });
-      setTimeout(() => setFeedback(null), 3000);
     } catch (error: any) {
       setFeedback({ type: 'error', message: 'Erro ao salvar linhas: ' + (error.message || 'Erro desconhecido') });
+      throw error; // Propagar erro para o componente de upload saber que falhou
     }
   };
 
@@ -228,15 +226,32 @@ export const BaseSimulacaoPage: React.FC = () => {
       return;
     }
 
+    // Contar linhas pendentes ou com erro
+    const linhasPendentesOuErro = baseAtual.linhas.filter(
+      (linha) => linha.status === 'PENDENTE' || linha.status === 'ERRO'
+    );
+
+    if (linhasPendentesOuErro.length === 0) {
+      setFeedback({
+        type: 'success',
+        message: 'Todas as linhas já foram processadas com sucesso! Não há nada para processar.'
+      });
+      setTimeout(() => setFeedback(null), 5000);
+      return;
+    }
+
     setConfirmDialog({
       isOpen: true,
       title: 'Processar Base',
-      message: `Deseja processar ${baseAtual.linhas.length} linhas? O processamento será feito em lotes de 100 linhas em paralelo.`,
+      message: `Serão processadas ${linhasPendentesOuErro.length} linha(s) pendente(s) ou com erro de um total de ${baseAtual.linhas.length} linhas. O processamento será feito em lotes de 10 linhas em paralelo.`,
       type: 'warning',
       onConfirm: async () => {
         try {
-          await processar.mutateAsync({ baseId: baseAtualId });
-          setFeedback({ type: 'success', message: 'Processamento iniciado! As linhas serão calculadas em segundo plano.' });
+          const resultado = await processar.mutateAsync({ baseId: baseAtualId });
+          setFeedback({
+            type: 'success',
+            message: resultado.message || 'Processamento iniciado! As linhas serão calculadas em segundo plano.'
+          });
           setTimeout(() => setFeedback(null), 5000);
         } catch (error: any) {
           setFeedback({ type: 'error', message: 'Erro ao iniciar processamento: ' + (error.message || 'Erro desconhecido') });
@@ -249,7 +264,7 @@ export const BaseSimulacaoPage: React.FC = () => {
   // ==================== RENDER ====================
 
   return (
-    <DashboardLayout>
+    <DashboardLayout hideSidebarOnDesktop={baseAtualId !== null && hideSidebar}>
       {/* Modal de Confirmação */}
       <ConfirmDialog
         isOpen={confirmDialog.isOpen}
@@ -417,6 +432,14 @@ export const BaseSimulacaoPage: React.FC = () => {
                 >
                   ← Voltar
                 </Button>
+                <Button
+                  variant="secondary"
+                  onClick={() => setHideSidebar(!hideSidebar)}
+                  className="hidden lg:flex"
+                  title={hideSidebar ? 'Mostrar menu' : 'Ocultar menu'}
+                >
+                  {hideSidebar ? <PanelLeftOpen className="w-5 h-5" /> : <PanelLeftClose className="w-5 h-5" />}
+                </Button>
                 <div>
                   <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
                     {baseAtual?.nome || 'Carregando...'}
@@ -431,40 +454,8 @@ export const BaseSimulacaoPage: React.FC = () => {
             </div>
 
             <div className="space-y-4">
-                {/* Estatísticas e Ações em uma linha */}
-                <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
-                  {/* Estatísticas - 5 colunas */}
-                  {baseAtual && (
-                    <div className="lg:col-span-5 grid grid-cols-4 gap-3">
-                      <Card className="p-3">
-                        <p className="text-xs text-gray-600 dark:text-gray-400 mb-0.5">Total</p>
-                        <p className="text-xl font-bold text-gray-900 dark:text-white">
-                          {baseAtual.totalLinhas}
-                        </p>
-                      </Card>
-                      <Card className="p-3">
-                        <p className="text-xs text-gray-600 dark:text-gray-400 mb-0.5">Sucesso</p>
-                        <p className="text-xl font-bold text-green-600 dark:text-green-400">
-                          {baseAtual.linhasComSucesso}
-                        </p>
-                      </Card>
-                      <Card className="p-3">
-                        <p className="text-xs text-gray-600 dark:text-gray-400 mb-0.5">Erro</p>
-                        <p className="text-xl font-bold text-red-600 dark:text-red-400">
-                          {baseAtual.linhasComErro}
-                        </p>
-                      </Card>
-                      <Card className="p-3">
-                        <p className="text-xs text-gray-600 dark:text-gray-400 mb-0.5">Status</p>
-                        <p className="text-xs font-semibold text-gray-900 dark:text-white">
-                          {baseAtual.status}
-                        </p>
-                      </Card>
-                    </div>
-                  )}
-
-                  {/* Ações - 7 colunas */}
-                  <Card className="lg:col-span-7 p-3">
+                {/* Ações */}
+                <Card className="p-3">
                     <div className="flex flex-wrap items-center justify-between gap-2">
                       <h3 className="text-sm font-semibold text-gray-900 dark:text-white">
                         Ações
@@ -513,6 +504,11 @@ export const BaseSimulacaoPage: React.FC = () => {
                       <div className="mt-3 pt-3 border-t border-gray-200 dark:border-gray-700">
                         <UploadExcelCsv
                           onDataParsed={handleDataParsed}
+                          onSuccess={(totalLinhas) => {
+                            setShowUpload(false);
+                            setFeedback({ type: 'success', message: `${totalLinhas} linhas importadas e salvas com sucesso!` });
+                            setTimeout(() => setFeedback(null), 5000);
+                          }}
                           isUploading={adicionarLinhas.isPending}
                         />
                       </div>
@@ -541,7 +537,6 @@ export const BaseSimulacaoPage: React.FC = () => {
                       </div>
                     )}
                   </Card>
-                </div>
 
                 {/* Tabela de Linhas */}
                 <Card className="p-3">

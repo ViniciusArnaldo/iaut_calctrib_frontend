@@ -4,15 +4,55 @@ import { Button } from '../../../components/ui/Button';
 import type { LinhaBaseSimulacao, TipoCalculadora } from '../types/base-simulacao.types';
 import * as XLSX from 'xlsx';
 
+/**
+ * Normaliza valores numéricos convertendo vírgula em ponto
+ * Aceita: "1.234,56" ou "1234,56" ou "1234.56"
+ * Retorna: "1234.56"
+ */
+const normalizeNumericValue = (value: any): any => {
+  if (value === null || value === undefined || value === '') {
+    return value;
+  }
+
+  // Se já for número, retorna como está
+  if (typeof value === 'number') {
+    return value;
+  }
+
+  // Se for string, tenta normalizar
+  if (typeof value === 'string') {
+    // Remove espaços
+    let normalized = value.trim();
+
+    // Se contém vírgula, assume formato brasileiro
+    if (normalized.includes(',')) {
+      // Remove pontos (separadores de milhar) e substitui vírgula por ponto
+      normalized = normalized.replace(/\./g, '').replace(',', '.');
+    }
+
+    // Tenta converter para número
+    const num = Number(normalized);
+    return isNaN(num) ? value : num;
+  }
+
+  return value;
+};
+
 interface UploadExcelCsvProps {
-  onDataParsed: (linhas: Partial<LinhaBaseSimulacao>[]) => void;
+  onDataParsed: (linhas: Partial<LinhaBaseSimulacao>[]) => Promise<void>;
+  onSuccess?: (totalLinhas: number) => void;
   isUploading?: boolean;
 }
 
-export const UploadExcelCsv: React.FC<UploadExcelCsvProps> = ({ onDataParsed, isUploading = false }) => {
+export const UploadExcelCsv: React.FC<UploadExcelCsvProps> = ({ onDataParsed, onSuccess, isUploading = false }) => {
   const [isDragging, setIsDragging] = useState(false);
   const [file, setFile] = useState<File | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [uploadProgress, setUploadProgress] = useState<{
+    current: number;
+    total: number;
+    isUploading: boolean;
+  } | null>(null);
 
   const handleDragOver = (e: React.DragEvent) => {
     e.preventDefault();
@@ -109,10 +149,26 @@ export const UploadExcelCsv: React.FC<UploadExcelCsvProps> = ({ onDataParsed, is
           tipoCalculadora: tipoCalculadora as TipoCalculadora,
         };
 
-        // Copiar todos os outros campos
+        // Campos numéricos que precisam de normalização
+        const camposNumericos = [
+          'baseCalculo',
+          'baseCalculo',
+          'quantidade',
+          'municipio',
+          'item',
+        ];
+
+        // Copiar todos os outros campos, normalizando valores numéricos
         Object.keys(row).forEach((key) => {
           if (key.toLowerCase() !== 'tipocalculadora') {
-            linha[key] = row[key];
+            const value = row[key];
+
+            // Se for um campo numérico conhecido, normaliza
+            if (camposNumericos.includes(key)) {
+              linha[key] = normalizeNumericValue(value);
+            } else {
+              linha[key] = value;
+            }
           }
         });
 
@@ -125,21 +181,91 @@ export const UploadExcelCsv: React.FC<UploadExcelCsvProps> = ({ onDataParsed, is
       }
 
       console.log('Linhas processadas:', linhas);
-      onDataParsed(linhas);
-      setFile(null);
+
+      // ==================== UPLOAD EM LOTES ====================
+      const BATCH_SIZE = 500; // Enviar 500 linhas por vez
+      const totalLinhas = linhas.length;
+      const totalBatches = Math.ceil(totalLinhas / BATCH_SIZE);
+
+      setUploadProgress({
+        current: 0,
+        total: totalLinhas,
+        isUploading: true,
+      });
+
+      try {
+        for (let i = 0; i < totalBatches; i++) {
+          const start = i * BATCH_SIZE;
+          const end = Math.min(start + BATCH_SIZE, totalLinhas);
+          const batch = linhas.slice(start, end);
+
+          console.log(`Enviando lote ${i + 1}/${totalBatches} (${batch.length} linhas)`);
+
+          // Enviar lote
+          await onDataParsed(batch);
+
+          // Atualizar progresso
+          setUploadProgress({
+            current: end,
+            total: totalLinhas,
+            isUploading: true,
+          });
+        }
+
+        // Upload concluído
+        setUploadProgress(null);
+        setFile(null);
+
+        // Chamar callback de sucesso
+        if (onSuccess) {
+          onSuccess(totalLinhas);
+        }
+      } catch (err) {
+        setUploadProgress(null);
+        throw err; // Propagar erro para o catch externo
+      }
     } catch (err) {
       console.error('Erro ao processar arquivo:', err);
       setError('Erro ao processar arquivo. Verifique o formato.');
+      setUploadProgress(null);
     }
   };
 
   const removeFile = () => {
     setFile(null);
     setError(null);
+    setUploadProgress(null);
   };
+
+  const isProcessing = uploadProgress?.isUploading || isUploading;
 
   return (
     <div className="space-y-4">
+      {/* Barra de Progresso */}
+      {uploadProgress && (
+        <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-sm font-medium text-blue-900 dark:text-blue-300">
+              Enviando linhas...
+            </span>
+            <span className="text-sm text-blue-700 dark:text-blue-400">
+              {uploadProgress.current} / {uploadProgress.total}
+            </span>
+          </div>
+          <div className="w-full bg-blue-200 dark:bg-blue-800 rounded-full h-2.5">
+            <div
+              className="bg-blue-600 dark:bg-blue-400 h-2.5 rounded-full transition-all duration-300"
+              style={{
+                width: `${(uploadProgress.current / uploadProgress.total) * 100}%`,
+              }}
+            />
+          </div>
+          <p className="text-xs text-blue-600 dark:text-blue-400 mt-2">
+            {Math.round((uploadProgress.current / uploadProgress.total) * 100)}% concluído
+          </p>
+        </div>
+      )}
+
       {/* Área de Upload */}
       {!file ? (
         <div
@@ -201,11 +327,11 @@ export const UploadExcelCsv: React.FC<UploadExcelCsvProps> = ({ onDataParsed, is
               variant="primary"
               onClick={processFile}
               className="flex-1"
-              disabled={isUploading}
+              disabled={isProcessing}
             >
-              {isUploading ? 'Salvando...' : 'Importar e Salvar'}
+              {isProcessing ? 'Enviando...' : 'Importar e Salvar'}
             </Button>
-            <Button variant="secondary" onClick={removeFile} disabled={isUploading}>
+            <Button variant="secondary" onClick={removeFile} disabled={isProcessing}>
               Cancelar
             </Button>
           </div>
@@ -229,6 +355,7 @@ export const UploadExcelCsv: React.FC<UploadExcelCsvProps> = ({ onDataParsed, is
           <li>• A primeira linha deve conter os nomes das colunas</li>
           <li>• Obrigatório: coluna "tipoCalculadora" com valores: REGIME_GERAL, PEDAGIO, BASE_CALCULO_IS ou BASE_CALCULO_CBS_IBS</li>
           <li>• Outras colunas devem corresponder aos campos necessários para cada tipo de calculadora</li>
+          <li>• Valores numéricos: aceita tanto vírgula (1.234,56) quanto ponto (1234.56) como separador decimal</li>
           <li>• Use vírgula (,) como separador no CSV</li>
         </ul>
       </div>

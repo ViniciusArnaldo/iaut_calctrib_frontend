@@ -13,6 +13,7 @@ export const downloadTemplateExcel = () => {
       municipio: 4314902,
       dataOperacao: '2027-01-01T10:00:00-03:00',
       item: 1,
+      cfop: '5101',
       ncm: '24021000',
       nbs: '',
       cst: '000',
@@ -27,6 +28,7 @@ export const downloadTemplateExcel = () => {
       municipio: 3550308,
       dataOperacao: '2027-01-01T14:30:00-03:00',
       item: 2,
+      cfop: '5102',
       ncm: '84715010',
       nbs: '',
       cst: '000',
@@ -41,6 +43,7 @@ export const downloadTemplateExcel = () => {
       municipio: 3106200,
       dataOperacao: '2027-01-02T09:00:00-03:00',
       item: 3,
+      cfop: '5101',
       ncm: '22030000',
       nbs: '',
       cst: '000',
@@ -61,6 +64,7 @@ export const downloadTemplateExcel = () => {
     { wch: 12 }, // municipio
     { wch: 25 }, // dataOperacao
     { wch: 8 },  // item
+    { wch: 10 }, // cfop
     { wch: 12 }, // ncm
     { wch: 12 }, // nbs
     { wch: 8 },  // cst
@@ -87,6 +91,7 @@ export const downloadTemplateExcel = () => {
     ['municipio', 'Código IBGE do município (7 dígitos)', '4314902 (Porto Alegre)'],
     ['dataOperacao', 'Data e hora da operação no formato ISO', '2027-01-01T10:00:00-03:00'],
     ['item', 'Número do item na nota/operação', '1, 2, 3...'],
+    ['cfop', 'Código Fiscal de Operações (4 dígitos) - campo guia', '5101, 5102, 6101...'],
     ['ncm', 'Código NCM (8 dígitos) para produtos', '24021000'],
     ['nbs', 'Código NBS para serviços (deixe vazio se for produto)', '114052200'],
     ['cst', 'Código de Situação Tributária', '000, 010, 020...'],
@@ -117,10 +122,10 @@ export const downloadTemplateExcel = () => {
  * Gera e faz download de um template CSV simplificado para REGIME GERAL
  */
 export const downloadTemplateCSV = () => {
-  const csvContent = `tipoCalculadora,uf,municipio,dataOperacao,item,ncm,nbs,cst,baseCalculo,classificacaoTributaria,quantidade,unidadeMedida
-REGIME_GERAL,RS,4314902,2027-01-01T10:00:00-03:00,1,24021000,,000,200.00,000001,10,UN
-REGIME_GERAL,SP,3550308,2027-01-01T14:30:00-03:00,2,84715010,,000,1500.00,000001,5,UN
-REGIME_GERAL,MG,3106200,2027-01-02T09:00:00-03:00,3,22030000,,000,50.00,000001,100,LT`;
+  const csvContent = `tipoCalculadora,uf,municipio,dataOperacao,item,cfop,ncm,nbs,cst,baseCalculo,classificacaoTributaria,quantidade,unidadeMedida
+REGIME_GERAL,RS,4314902,2027-01-01T10:00:00-03:00,1,5101,24021000,,000,200.00,000001,10,UN
+REGIME_GERAL,SP,3550308,2027-01-01T14:30:00-03:00,2,5102,84715010,,000,1500.00,000001,5,UN
+REGIME_GERAL,MG,3106200,2027-01-02T09:00:00-03:00,3,5101,22030000,,000,50.00,000001,100,LT`;
 
   // Criar blob e fazer download
   const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });

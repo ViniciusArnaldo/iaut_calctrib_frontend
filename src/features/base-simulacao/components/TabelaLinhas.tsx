@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { CheckCircle, XCircle, Clock, Loader, Save, X, AlertCircle, Edit, Trash } from 'lucide-react';
+import { ModalPreenchimentoLote } from './ModalPreenchimentoLote';
 
 interface Linha {
   id: number;
@@ -14,6 +15,7 @@ interface Linha {
   municipio?: number;
   dataOperacao?: string;
   item?: number;
+  cfop?: string;
   ncm?: string;
   ncmAntigo?: string;
   nbs?: string;
@@ -97,6 +99,10 @@ export const TabelaLinhas: React.FC<TabelaLinhasProps> = ({
   const [isEditMode, setIsEditMode] = useState(false);
   const [selectedIds, setSelectedIds] = useState<Set<number>>(new Set());
   const [editedData, setEditedData] = useState<Map<number, Partial<Linha>>>(new Map());
+  const [modalPreenchimento, setModalPreenchimento] = useState<{
+    isOpen: boolean;
+    campo: string;
+  }>({ isOpen: false, campo: '' });
 
   // Toggle modo de edição - quando ativa, todas as linhas ficam editáveis
   const handleToggleEditMode = () => {
@@ -114,6 +120,7 @@ export const TabelaLinhas: React.FC<TabelaLinhasProps> = ({
             municipio: dadosEditados.municipio !== undefined ? dadosEditados.municipio : linhaOriginal.municipio,
             dataOperacao: dadosEditados.dataOperacao !== undefined ? dadosEditados.dataOperacao : linhaOriginal.dataOperacao,
             item: dadosEditados.item !== undefined ? dadosEditados.item : linhaOriginal.item,
+            cfop: dadosEditados.cfop !== undefined ? dadosEditados.cfop : linhaOriginal.cfop,
             ncm: dadosEditados.ncm !== undefined ? dadosEditados.ncm : linhaOriginal.ncm,
             nbs: dadosEditados.nbs !== undefined ? dadosEditados.nbs : linhaOriginal.nbs,
             cst: dadosEditados.cst !== undefined ? dadosEditados.cst : linhaOriginal.cst,
@@ -190,6 +197,58 @@ export const TabelaLinhas: React.FC<TabelaLinhasProps> = ({
     return linha;
   };
 
+  // Abrir modal de preenchimento em lote
+  const handleOpenModalPreenchimento = (campo: string) => {
+    setModalPreenchimento({ isOpen: true, campo });
+  };
+
+  // Confirmar preenchimento em lote
+  const handleConfirmarPreenchimento = (intervalos: Array<{ id: number; linhaInicio: number; linhaFim: number; valor: string; filtroCfop?: string }>) => {
+    const novoEditedData = new Map(editedData);
+
+    intervalos.forEach((intervalo) => {
+      linhas.forEach((linha) => {
+        // Verificar se deve processar esta linha
+        let deveProcessar = false;
+
+        if (intervalo.filtroCfop && intervalo.filtroCfop.trim() !== '') {
+          // Filtrar por CFOP: apenas linhas com o CFOP especificado
+          deveProcessar = linha.cfop === intervalo.filtroCfop;
+        } else {
+          // Filtrar por intervalo de linhas
+          deveProcessar = linha.numeroLinha >= intervalo.linhaInicio && linha.numeroLinha <= intervalo.linhaFim;
+        }
+
+        if (deveProcessar) {
+          const linhaData = novoEditedData.get(linha.id) || {};
+
+          // Converter valor conforme o tipo do campo
+          let valorConvertido: any = intervalo.valor;
+          if (modalPreenchimento.campo === 'municipio' || modalPreenchimento.campo === 'item') {
+            valorConvertido = intervalo.valor ? Number(intervalo.valor) : null;
+          } else if (modalPreenchimento.campo === 'baseCalculo' || modalPreenchimento.campo === 'quantidade') {
+            valorConvertido = intervalo.valor ? Number(intervalo.valor) : null;
+          } else if (modalPreenchimento.campo === 'cfop') {
+            valorConvertido = intervalo.valor || null;
+          }
+
+          novoEditedData.set(linha.id, {
+            ...linhaData,
+            [modalPreenchimento.campo]: valorConvertido,
+          });
+        }
+      });
+    });
+
+    setEditedData(novoEditedData);
+    setModalPreenchimento({ isOpen: false, campo: '' });
+
+    // Ativar modo de edição se não estiver ativo
+    if (!isEditMode) {
+      setIsEditMode(true);
+    }
+  };
+
   if (linhas.length === 0) {
     return (
       <div className="text-center py-12">
@@ -202,6 +261,15 @@ export const TabelaLinhas: React.FC<TabelaLinhasProps> = ({
 
   return (
     <div className="relative">
+      {/* Modal de Preenchimento em Lote */}
+      <ModalPreenchimentoLote
+        isOpen={modalPreenchimento.isOpen}
+        campo={modalPreenchimento.campo}
+        totalLinhas={linhas.length}
+        onClose={() => setModalPreenchimento({ isOpen: false, campo: '' })}
+        onConfirm={handleConfirmarPreenchimento}
+      />
+
       {/* Menu Flutuante Horizontal - Aparece apenas quando há itens selecionados ou está em modo de edição */}
       {(selectedIds.size > 0 || isEditMode) && (
         <div className="fixed bottom-6 right-6 z-50">
@@ -290,20 +358,87 @@ export const TabelaLinhas: React.FC<TabelaLinhasProps> = ({
             <tr>
               <th className="px-2 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">#</th>
               <th className="px-2 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Status</th>
-              <th className="px-2 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">UF</th>
-              <th className="px-2 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Município</th>
+              <th
+                onDoubleClick={() => handleOpenModalPreenchimento('uf')}
+                className="px-2 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                title="Duplo clique para preencher em lote"
+              >
+                UF
+              </th>
+              <th
+                onDoubleClick={() => handleOpenModalPreenchimento('municipio')}
+                className="px-2 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                title="Duplo clique para preencher em lote"
+              >
+                Município
+              </th>
               <th className="px-2 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Data</th>
-              <th className="px-2 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Item</th>
+              <th
+                onDoubleClick={() => handleOpenModalPreenchimento('item')}
+                className="px-2 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                title="Duplo clique para preencher em lote"
+              >
+                Item
+              </th>
+              <th
+                onDoubleClick={() => handleOpenModalPreenchimento('cfop')}
+                className="px-2 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                title="Duplo clique para preencher em lote"
+              >
+                CFOP
+              </th>
               <th className="px-2 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">NCM Antigo</th>
-              <th className="px-2 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">NCM</th>
+              <th
+                onDoubleClick={() => handleOpenModalPreenchimento('ncm')}
+                className="px-2 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                title="Duplo clique para preencher em lote"
+              >
+                NCM
+              </th>
               <th className="px-2 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">NBS Antigo</th>
-              <th className="px-2 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">NBS</th>
+              <th
+                onDoubleClick={() => handleOpenModalPreenchimento('nbs')}
+                className="px-2 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                title="Duplo clique para preencher em lote"
+              >
+                NBS
+              </th>
               <th className="px-2 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">CST Antigo</th>
-              <th className="px-2 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">CST</th>
-              <th className="px-2 py-2 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Base Cálculo</th>
-              <th className="px-2 py-2 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Qtd</th>
-              <th className="px-2 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">UN</th>
-              <th className="px-2 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Class. Trib.</th>
+              <th
+                onDoubleClick={() => handleOpenModalPreenchimento('cst')}
+                className="px-2 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                title="Duplo clique para preencher em lote"
+              >
+                CST
+              </th>
+              <th
+                onDoubleClick={() => handleOpenModalPreenchimento('baseCalculo')}
+                className="px-2 py-2 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                title="Duplo clique para preencher em lote"
+              >
+                Base Cálculo
+              </th>
+              <th
+                onDoubleClick={() => handleOpenModalPreenchimento('quantidade')}
+                className="px-2 py-2 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                title="Duplo clique para preencher em lote"
+              >
+                Qtd
+              </th>
+              <th
+                onDoubleClick={() => handleOpenModalPreenchimento('unidadeMedida')}
+                className="px-2 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                title="Duplo clique para preencher em lote"
+              >
+                UN
+              </th>
+              <th
+                onDoubleClick={() => handleOpenModalPreenchimento('classificacaoTributaria')}
+                className="px-2 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                title="Duplo clique para preencher em lote"
+              >
+                Class. Trib.
+              </th>
               <th className="px-2 py-2 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Total</th>
               <th className="px-2 py-2 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">CBS</th>
               <th className="px-2 py-2 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">IBS</th>
@@ -340,12 +475,12 @@ export const TabelaLinhas: React.FC<TabelaLinhasProps> = ({
                     )}
                   </div>
                   {linha.status === 'ERRO' && linha.mensagemErro && (
-                    <p className="text-xs text-red-600 dark:text-red-400 mt-1 max-w-xs truncate" title={linha.mensagemErro}>
+                    <p className="text-xs text-red-600 dark:text-red-400 mt-1 max-w-[150px] truncate" title={linha.mensagemErro}>
                       {linha.mensagemErro}
                     </p>
                   )}
                   {linha.erroValidacao && (
-                    <p className="text-xs text-orange-600 dark:text-orange-400 mt-1 max-w-xs truncate" title={linha.erroValidacao}>
+                    <p className="text-xs text-orange-600 dark:text-orange-400 mt-1 max-w-[150px] truncate" title={linha.erroValidacao}>
                       {linha.erroValidacao}
                     </p>
                   )}
@@ -396,6 +531,21 @@ export const TabelaLinhas: React.FC<TabelaLinhasProps> = ({
                     />
                   ) : (
                     <span className="text-gray-700 dark:text-gray-300">{linha.item || '-'}</span>
+                  )}
+                </td>
+
+                {/* CFOP */}
+                <td className="px-2 py-2 whitespace-nowrap">
+                  {isEditMode ? (
+                    <input
+                      type="text"
+                      value={data.cfop || ''}
+                      onChange={(e) => handleFieldChange(linha.id, 'cfop', e.target.value)}
+                      className="w-16 px-1 py-0.5 text-xs border rounded dark:bg-gray-700 dark:border-gray-600"
+                      maxLength={4}
+                    />
+                  ) : (
+                    <span className="text-gray-700 dark:text-gray-300">{linha.cfop || '-'}</span>
                   )}
                 </td>
 

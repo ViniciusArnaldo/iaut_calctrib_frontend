@@ -88,12 +88,9 @@ export const deletarLinha = async (baseId: number, linhaId: number): Promise<voi
 // ==================== PROCESSAMENTO ====================
 
 export const processarBase = async (
-  baseId: number,
-  apenasErros: boolean = false
+  baseId: number
 ): Promise<any> => {
-  const response = await apiClient.post(`/base-simulacao/${baseId}/processar`, {
-    apenasErros,
-  });
+  const response = await apiClient.post(`/base-simulacao/${baseId}/processar`, {});
   return response.data;
 };
 
