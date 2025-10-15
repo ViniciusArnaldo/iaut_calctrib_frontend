@@ -9,7 +9,8 @@ import {
   Users,
   User,
   LogOut,
-  FolderKanban
+  FolderKanban,
+  FlaskConical
 } from 'lucide-react';
 import { ROUTES } from '../../utils/constants';
 import { useAuth } from '../../features/auth/context/AuthContext';
@@ -73,6 +74,12 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen = true, onClose }) => {
             icon: <FolderKanban className={iconClasses} />,
             href: ROUTES.CADASTROS,
             active: isActive(ROUTES.CADASTROS),
+          },
+          {
+            label: 'Base Simulação',
+            icon: <FlaskConical className={iconClasses} />,
+            href: ROUTES.BASE_SIMULACAO,
+            active: isActive(ROUTES.BASE_SIMULACAO),
           },
         ],
       },

@@ -18,4 +18,5 @@ export const ROUTES = {
   USERS: '/users',
   FERRAMENTAS: '/ferramentas',
   CADASTROS: '/cadastros',
+  BASE_SIMULACAO: '/base-simulacao',
 } as const;

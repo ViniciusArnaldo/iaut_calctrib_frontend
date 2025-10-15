@@ -15,6 +15,7 @@ import { SubscriptionsPage } from './pages/subscriptions/SubscriptionsPage';
 import { UsersPage } from './pages/users/UsersPage';
 import { FerramentasPage } from './pages/ferramentas/FerramentasPage';
 import { CadastrosPage } from './pages/cadastros/CadastrosPage';
+import { BaseSimulacaoPage } from './pages/base-simulacao/BaseSimulacaoPage';
 import { ROUTES } from './utils/constants';
 
 // Create React Query client
@@ -103,6 +104,15 @@ function App() {
               element={
                 <ProtectedRoute>
                   <CadastrosPage />
+                </ProtectedRoute>
+              }
+            />
+
+            <Route
+              path={ROUTES.BASE_SIMULACAO}
+              element={
+                <ProtectedRoute>
+                  <BaseSimulacaoPage />
                 </ProtectedRoute>
               }
             />
