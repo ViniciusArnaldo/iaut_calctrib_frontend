@@ -16,6 +16,8 @@ import { UsersPage } from './pages/users/UsersPage';
 import { FerramentasPage } from './pages/ferramentas/FerramentasPage';
 import { CadastrosPage } from './pages/cadastros/CadastrosPage';
 import { BaseSimulacaoPage } from './pages/base-simulacao/BaseSimulacaoPage';
+import { AnalisesPage } from './pages/analises/AnalisesPage';
+import { NovaAnalisePage } from './pages/analises/NovaAnalisePage';
 import { ROUTES } from './utils/constants';
 
 // Create React Query client
@@ -113,6 +115,33 @@ function App() {
               element={
                 <ProtectedRoute>
                   <BaseSimulacaoPage />
+                </ProtectedRoute>
+              }
+            />
+
+            <Route
+              path={ROUTES.ANALISES}
+              element={
+                <ProtectedRoute>
+                  <AnalisesPage />
+                </ProtectedRoute>
+              }
+            />
+
+            <Route
+              path={ROUTES.ANALISES_NOVA}
+              element={
+                <ProtectedRoute>
+                  <NovaAnalisePage />
+                </ProtectedRoute>
+              }
+            />
+
+            <Route
+              path={ROUTES.ANALISES_EDITAR}
+              element={
+                <ProtectedRoute>
+                  <NovaAnalisePage />
                 </ProtectedRoute>
               }
             />

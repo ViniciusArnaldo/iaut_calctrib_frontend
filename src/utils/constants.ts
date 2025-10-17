@@ -19,4 +19,8 @@ export const ROUTES = {
   FERRAMENTAS: '/ferramentas',
   CADASTROS: '/cadastros',
   BASE_SIMULACAO: '/base-simulacao',
+  ANALISES: '/analises',
+  ANALISES_NOVA: '/analises/nova',
+  ANALISES_EDITAR: '/analises/:id/editar',
+  ANALISES_DASHBOARD: '/analises/dashboard',
 } as const;

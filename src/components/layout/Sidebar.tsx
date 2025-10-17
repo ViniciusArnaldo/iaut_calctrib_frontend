@@ -10,7 +10,8 @@ import {
   User,
   LogOut,
   FolderKanban,
-  FlaskConical
+  FlaskConical,
+  BarChart3
 } from 'lucide-react';
 import { ROUTES } from '../../utils/constants';
 import { useAuth } from '../../features/auth/context/AuthContext';
@@ -56,6 +57,12 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen = true, onClose }) => {
             icon: <Calculator className={iconClasses} />,
             href: ROUTES.CALCULADORA,
             active: isActive(ROUTES.CALCULADORA),
+          },
+          {
+            label: 'Análises',
+            icon: <BarChart3 className={iconClasses} />,
+            href: ROUTES.ANALISES,
+            active: isActive(ROUTES.ANALISES),
           },
           {
             label: 'Histórico',
